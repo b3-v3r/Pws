@@ -45,22 +45,40 @@ void ProjectsWatcher::AddFileToWatcher( std_fs::path file_path,
      if( is_found != this->changed_files.end() )
           return;
 
+     std::cout << "Add file " << path_str << "\n";
      this->changed_files.push_back( 
           {
                .path = file_path,
+               .last_change_time = time_change,
+
                .original_time_change = time_change,
                .original_size = std_fs::file_size( file_path ),
-               .num_changes = 1
+
+               .num_changes = 1,
           });
 }
 
+void get_time( std::string path, std::time_t t )
+{
+     struct tm *tt = localtime(&t);     
 
-void ProjectsWatcher::FindNewChangeFiles( std::string root_path, std::time_t &last_change_time, std::time_t &res )
+     char buf[90];
+     strftime(buf, 90, "%c", tt);
+
+     std::cout << path << " : \t" << buf << "\n";
+}
+
+void ProjectsWatcher::FindNewChangeFiles( std::string root_path,
+          std::time_t &last_change_time, std::time_t &res )
 { 
-
+     std::cout << "\n\n";
+     get_time( "Root path ", last_change_time );;
+     std::cout << "\n\n";
      for( const auto &path_it : std_fs::directory_iterator(root_path) )
      {
           std::time_t current_change_t = this->GetTimeChangeFile( path_it.path().u8string() ); 
+          
+          get_time( path_it.path().u8string(), current_change_t );
 
           if( current_change_t > last_change_time )
           {
@@ -76,6 +94,18 @@ void ProjectsWatcher::FindNewChangeFiles( std::string root_path, std::time_t &la
      }
 } 
 
+void ProjectsWatcher::ViewChangedFiles()
+{
+     for( auto file : this->changed_files )
+     {
+          std::time_t current_change_t = this->GetTimeChangeFile(file.path.u8string());
+          if( current_change_t > file.last_change_time )
+          {
+               file.num_changes++;
+               file.last_change_time = current_change_t;
+          }
+     }
+}
 
 void ProjectsWatcher::Run( std::string root_path )
 {
@@ -87,6 +117,8 @@ void ProjectsWatcher::Run( std::string root_path )
           this->FindNewChangeFiles( root_path, last_change_time, res);
           last_change_time = res; 
 
+          this->ViewChangedFiles();
           std::this_thread::sleep_for( std::chrono::seconds( DELAY_CHECKS_SEC ) );
      }
 }
+

@@ -56,12 +56,13 @@ const std::list< std::string > supported_types_file =
 
 struct FileInfo {
      std_fs::path path;
-          
+      
+     std::time_t last_change_time;
+
      std::time_t original_time_change;
      std::size_t original_size;
 
-     std::size_t num_changes;    
-
+     int32_t num_changes;    
      // make func get formula 
 };
 
@@ -73,7 +74,8 @@ private:
 
      enum PATH_TYPE GetPathType( const std_fs::path *cpath );
      std::time_t GetTimeChangeFile( std::string );
-
+     
+     void ViewChangedFiles();
      void AddFileToWatcher( std_fs::path file_path, 
                std::time_t time_change );
      void FindNewChangeFiles( std::string root_path, 
