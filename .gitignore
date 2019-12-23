@@ -1,4 +1,7 @@
+# For vim 
 *.swp
-*.cc~
-*.hpp~
-*.h~
+*~
+
+# For bin files 
+*.a
+

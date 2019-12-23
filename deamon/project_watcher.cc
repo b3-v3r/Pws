@@ -1,6 +1,15 @@
 #include "lib/projects_watcher.hpp"
 
 
+void get_time( std::string path, std::time_t t )
+{
+     struct tm *tt = localtime(&t);     
+
+     char buf[90];
+     strftime(buf, 90, "%c", tt);
+
+     std::cout << path << " : \t" << buf << "\n";
+}
 
 std::time_t ProjectsWatcher::GetTimeChangeFile( std::string path )
 {
@@ -47,7 +56,7 @@ void ProjectsWatcher::AddFileToWatcher( std_fs::path file_path )
                .original_time_change = time_change,
                .original_size = std_fs::file_size( file_path ),
 
-               .num_changes = 1,
+               .num_changes = 0,
           });
 }
 
@@ -63,12 +72,12 @@ void ProjectsWatcher::FindNewChangeFiles( std::string project_path )
 
 void ProjectsWatcher::ViewChangedFiles()
 {
-     for( auto file : this->changed_files )
+     for( auto &file : this->changed_files )
      {
           std::time_t current_change_t = this->GetTimeChangeFile(file.path.u8string());
+
           if( current_change_t > file.last_change_time )
           {
-               std::cout << "Num changes " << file.num_changes << "\n";
                file.num_changes++;
                file.last_change_time = current_change_t;
           }
@@ -82,9 +91,11 @@ void ProjectsWatcher::Run( std::string project_path )
 
      while( 1 ) 
      {
-          if( check_i++ == 10 )
+          if( check_i++ == 10 ) {
                this->FindNewChangeFiles( project_path );
-          
+               check_i = 0;
+          }
+
           this->ViewChangedFiles();
           std::this_thread::sleep_for( std::chrono::seconds( DELAY_CHECKS_SEC ) );
      }

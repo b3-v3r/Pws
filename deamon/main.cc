@@ -10,12 +10,8 @@ int main( int argc, char **argv )
      all_stat->AddProject( "/home/beaver/PwsProject/" );
      all_stat->AddProject( "/home/beaver/RimPkg/" );
 
-     /*
-      * Set private var
-      * all_stat->SetRootDir("~/")
-      */
-
-     // all_stat->Commit(); 
+     //
+     // all_stat->Commit(); or send hup to proccess
      //
     
      std::this_thread::sleep_for( std::chrono::seconds(59999) );
