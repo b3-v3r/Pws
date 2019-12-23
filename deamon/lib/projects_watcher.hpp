@@ -30,12 +30,6 @@ namespace std_fs = std::filesystem;
 
 // name type file and count use 
 
-enum PATH_TYPE {
-     TYPE_DIR = 0,
-     FTYPE_SUPPORTED,
-     FTYPE_NOT_SUPPORTED
-};
-
 const std::list< std::string > supported_types_file = 
 { ".c",     ".cc",   ".c++", ".cpp", ".C" ,
   ".h",     ".hh" ,  ".hpp",
@@ -72,21 +66,19 @@ private:
      std::vector< FileInfo > changed_files;
      std::thread watcher_thread;         
 
-     enum PATH_TYPE GetPathType( const std_fs::path *cpath );
+     bool has_TypeSupported( const std_fs::path *cpath );
      std::time_t GetTimeChangeFile( std::string );
      
      void ViewChangedFiles();
-     void AddFileToWatcher( std_fs::path file_path, 
-               std::time_t time_change );
-     void FindNewChangeFiles( std::string root_path, 
-               std::time_t &last_change_time, std::time_t &res );
+     void AddFileToWatcher( std_fs::path file_path );
 
+     void FindNewChangeFiles( std::string project_path );
 
-     void Run( std::string root_path);
+     void Run( std::string project_path );
  
 public:
-     ProjectsWatcher( std::string root_path);
-     ~ProjectsWatcher();
+     static ProjectsWatcher *CreateProjectWatcher( std::string project_path );
+     void DestroyWatcher(); 
 };
 
 

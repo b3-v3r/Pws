@@ -4,9 +4,9 @@
 namespace PwsCore {
 
 
-void AllStat::Init()
+void AllStat::AddProject( std::string pj_path )
 {
-     this->pw = new ProjectsWatcher( this->root_dir );
+     this->pw.push_back( ProjectsWatcher::CreateProjectWatcher(pj_path) );
 }
 
 }

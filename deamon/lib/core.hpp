@@ -4,12 +4,11 @@ namespace PwsCore {
       
      struct AllStat
      {
-          std::string root_dir = "/home/beaver/";
-
-          ProjectsWatcher *pw;
+          std::vector< ProjectsWatcher* > pw;
            
-          void WriteAllStat();      
-          void Init();
+          void WriteAllStat(); 
+          void AddProject( std::string pj_path );
+
      };
 
 }; 
