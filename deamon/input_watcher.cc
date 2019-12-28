@@ -1,7 +1,7 @@
 #include "lib/input_watcher.hpp"
 #include "lib/utils.hpp"
 
-void InputWather::AddInterval( ChronoClock::time_point &last_interval )
+void InputWatcher::AddInterval( ChronoClock::time_point &last_interval )
 {
      ChronoClock::time_point current_time = ChronoClock::now();
 
@@ -18,12 +18,12 @@ void InputWather::AddInterval( ChronoClock::time_point &last_interval )
 }
 
 
-float InputWather::input_stat::CanculateCPM()
+float InputWatcher::input_stat::CanculateCPM()
 {
      return CanculateCPS() * 60;
 }
 
-float InputWather::input_stat::CanculateCPS()
+float InputWatcher::input_stat::CanculateCPS()
 {
      float mean_interv = (float)(this->all_interval) / 
           (float)(this->num_pressed_keys);
@@ -32,22 +32,22 @@ float InputWather::input_stat::CanculateCPS()
 }
 
 
-void InputWather::EventTimer()
+void InputWatcher::StartEventTimer()
 {
-    static ChronoClock::time_point timer = ChronoClock::now(); // each 1 hour
-     std::chrono::seconds diff_sec = std::chrono::duration_cast
-          < std::chrono::seconds >(timer - ChronoClock::now());
-     
-     if( diff_sec.count() > 3600 ) 
-     {
-          timer = ChronoClock::now();
-          this->stat_per_hours.push_back( new struct input_stat );
-          this->current_stat = (*(--this->stat_per_hours.end()));
-     }
+     std::thread t( [ this ](){
+               
+               while( 1 )
+               {
+                    std::this_thread::sleep_for( std::chrono::hours(1) );
+
+                    this->stat_per_hours.push_back( new struct input_stat );
+                    this->current_stat = (*(--this->stat_per_hours.end()));
+               }
+          });
 }
 
 
-void InputWather::HandlerKeyPress()
+void InputWatcher::HandlerKeyPress()
 {
 
 #ifdef __linux__
@@ -59,10 +59,10 @@ void InputWather::HandlerKeyPress()
 
      ChronoClock::time_point last_interval = ChronoClock::now();
 
-     // make timer
+     this->StartEventTimer(); 
+
      while( 1 )
      {
-          //this->EventTimer(); 
           
           read(fd, &ev, sizeof(ev));
           if( (ev.type == EV_KEY) && (ev.value == 0) )
@@ -77,12 +77,12 @@ void InputWather::HandlerKeyPress()
 #endif
 }
 
-InputWather::InputWather()
+InputWatcher::InputWatcher()
 {
      this->stat_per_hours.push_back( new struct input_stat );
      this->current_stat = (*(--this->stat_per_hours.end()));
 
-     this->input_thread = std::thread(&InputWather::HandlerKeyPress,
+     this->input_thread = std::thread(&InputWatcher::HandlerKeyPress,
                this);
 }
 

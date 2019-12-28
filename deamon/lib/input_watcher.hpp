@@ -16,31 +16,29 @@
 typedef std::chrono::high_resolution_clock ChronoClock;
 typedef std::chrono::milliseconds chrono_millisec;
 
-class InputWather
+class InputWatcher
 {
 public:
      struct input_stat;
 
-     InputWather();
-     ~InputWather();
+     InputWatcher();
+     ~InputWatcher();
 
 private:
      std::thread input_thread;
 
+     struct input_stat *current_stat;     
      std::vector< input_stat *> stat_per_hours;
 
-     struct input_stat *current_stat;     
-
-     void EventTimer();
      void AddInterval( ChronoClock::time_point &last_interval );
-
      void HandlerKeyPress();
 
+     void StartEventTimer();
 };
 
-struct InputWather::input_stat
+struct InputWatcher::input_stat
 {
-     int32_t all_interval      = 0;
+     int32_t all_interval     = 0;
      int32_t num_pressed_keys = 0;     
 
      float CanculateCPS(); // chars per second

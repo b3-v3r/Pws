@@ -6,7 +6,7 @@ namespace PwsCore {
      struct AllStat
      {
           std::vector< ProjectsWatcher* > pw;
-          InputWather *iw;
+          InputWatcher *iw;
            
           void WriteAllStat(); 
           void AddProject( std::string pj_path );

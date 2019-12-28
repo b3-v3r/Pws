@@ -11,7 +11,7 @@ void AllStat::AddProject( std::string pj_path )
 
 void AllStat::HandlePressKey()
 {
-     this->iw = new InputWather();
+     this->iw = new InputWatcher();
 }
 
 

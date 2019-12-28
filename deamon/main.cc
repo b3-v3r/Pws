@@ -1,8 +1,6 @@
 #include "lib/main.hpp"
 #include "lib/core.hpp"
 
-
-
 int main( int argc, char **argv )
 {
      if( getuid() != 0 )
@@ -26,13 +24,3 @@ int main( int argc, char **argv )
      std::this_thread::sleep_for( std::chrono::seconds(59999) );
      return 0;
 }
-
-/*void get_time( std::string path, std::time_t t )
-{
-     struct tm *tt = localtime(&t);     
-
-     char buf[90];
-     strftime(buf, 90, "%c", tt);
-
-     std::cout << path << " : \t" << buf << "\n";
-}*/
