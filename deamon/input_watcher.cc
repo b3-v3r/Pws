@@ -39,13 +39,13 @@ void InputWatcher::StartEventTimer()
                while( 1 )
                {
                     std::this_thread::sleep_for( std::chrono::hours(1) );
-
+                    
                     this->stat_per_hours.push_back( new struct input_stat );
                     this->current_stat = (*(--this->stat_per_hours.end()));
                }
           });
+     t.detach();
 }
-
 
 void InputWatcher::HandlerKeyPress()
 {
@@ -54,8 +54,8 @@ void InputWatcher::HandlerKeyPress()
      struct input_event ev;
      int fd;
     
-     fd = open("/dev/input/event0", O_RDONLY);
-     //fd = open("/dev/input/event8", O_RDONLY); // for another keyboard
+     //fd = open("/dev/input/event0", O_RDONLY);
+     fd = open("/dev/input/event8", O_RDONLY); // for another keyboard
 
      ChronoClock::time_point last_interval = ChronoClock::now();
 
@@ -82,7 +82,6 @@ InputWatcher::InputWatcher()
      this->stat_per_hours.push_back( new struct input_stat );
      this->current_stat = (*(--this->stat_per_hours.end()));
 
-     this->input_thread = std::thread(&InputWatcher::HandlerKeyPress,
-               this);
+     this->input_thread = std::thread(&InputWatcher::HandlerKeyPress, this);
 }
 
