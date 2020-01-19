@@ -1,7 +1,9 @@
 # For vim 
-*.swp
+*.*.*
 *~
 
 # For bin files 
 *.a
 
+# For builds 
+build/

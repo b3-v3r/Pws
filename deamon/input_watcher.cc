@@ -1,29 +1,34 @@
-#include "lib/input_watcher.hpp"
-#include "lib/utils.hpp"
+#include "input_watcher.hpp"
+#include <iostream>
 
-void InputWatcher::AddInterval( ChronoClock::time_point &last_interval )
+void InputWatcher::AddInterval( input_stat *current_hour )
 {
-     ChronoClock::time_point current_time = ChronoClock::now();
+     static ChronoTimePoint last_interval = std::chrono::high_resolution_clock::now();
 
-     int diff_interval = std::chrono::duration_cast
-          < chrono_millisec > (current_time - last_interval).count();
+     ChronoTimePoint current_time = std::chrono::high_resolution_clock::now();
+
+     int diff_interval = std::chrono::duration_cast<chrono_millisec>
+          (current_time - last_interval).count();
 
      if( diff_interval > chrono_millisec(1400).count() )
-          diff_interval = 1400; // this first press keys
+          diff_interval = 1400; // this first press keys of long time 
 
-     this->current_stat->all_interval += diff_interval;
-     this->current_stat->num_pressed_keys++;
+     current_hour->all_interval += diff_interval + 1;
+     current_hour->num_pressed_keys++;
 
      last_interval = current_time;
+
+     std::cout << "Press key\n";
 }
 
 
-float InputWatcher::input_stat::CanculateCPM()
+float input_stat::CanculateCPM()
 {
      return CanculateCPS() * 60;
 }
 
-float InputWatcher::input_stat::CanculateCPS()
+
+float input_stat::CanculateCPS()
 {
      float mean_interv = (float)(this->all_interval) / 
           (float)(this->num_pressed_keys);
@@ -32,12 +37,12 @@ float InputWatcher::input_stat::CanculateCPS()
 }
 
 
-void InputWatcher::StartEventTimer()
+/*void InputWatcher::StartEventTimer()
 {
      std::thread t( [ this ](){
                
                while( 1 )
-               {
+               { // check 
                     std::this_thread::sleep_for( std::chrono::hours(1) );
                     
                     this->stat_per_hours.push_back( new struct input_stat );
@@ -45,43 +50,20 @@ void InputWatcher::StartEventTimer()
                }
           });
      t.detach();
-}
+}*/
 
-void InputWatcher::HandlerKeyPress()
+
+void InputWatcher::HandlerKeyPress( Display *display, 
+          input_stat *current_hour,
+          bool &is_window_changed )
 {
+     XEvent xev;
+     XNextEvent( display, &xev );
 
-#ifdef __linux__
-     struct input_event ev;
-     int fd;
-    
-     //fd = open("/dev/input/event0", O_RDONLY);
-     fd = open("/dev/input/event8", O_RDONLY); // for another keyboard
+     if( xev.type == KeyPress )
+          InputWatcher::AddInterval( current_hour );
 
-     ChronoClock::time_point last_interval = ChronoClock::now();
-
-     this->StartEventTimer(); 
-
-     while( 1 )
-     {
-          
-          read(fd, &ev, sizeof(ev));
-          if( (ev.type == EV_KEY) && (ev.value == 0) )
-               this->AddInterval( last_interval );
-          
-          std::this_thread::sleep_for( std::chrono::milliseconds(10) );
-
-     }
-     
-     close( fd );
-     
-#endif
-}
-
-InputWatcher::InputWatcher()
-{
-     this->stat_per_hours.push_back( new struct input_stat );
-     this->current_stat = (*(--this->stat_per_hours.end()));
-
-     this->input_thread = std::thread(&InputWatcher::HandlerKeyPress, this);
+     else if( xev.type == FocusOut )
+          is_window_changed = true;
 }
 

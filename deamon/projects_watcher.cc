@@ -1,4 +1,4 @@
-#include "lib/projects_watcher.hpp"
+#include "projects_watcher.hpp"
 
 
 void get_time( std::string path, std::time_t t )

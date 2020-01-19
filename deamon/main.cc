@@ -1,21 +1,11 @@
-#include "lib/main.hpp"
-#include "lib/core.hpp"
+#include "core.hpp"
 
 int main( int argc, char **argv )
 {
-     if( getuid() != 0 )
-     {
-          // add reopen programm 
-          std::cout << "Error: run deamon us root\n";
-          exit(0);
-     }
-
-     PwsCore::AllStat *all_stat = new PwsCore::AllStat;
+     AddProject( "/home/beaver/PwsProject/" );
+     AddProject( "/home/beaver/RimPkg/" );
      
-     all_stat->AddProject( "/home/beaver/PwsProject/" );
-     all_stat->AddProject( "/home/beaver/RimPkg/" );
-     
-     all_stat->HandlePressKey();
+     HandleProccess();   
 
      //
      // all_stat->Commit(); or send hup to proccess
