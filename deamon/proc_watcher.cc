@@ -92,7 +92,7 @@ void ProcWatcher::GetWindowProp()
 
           cwp.last_usage_window = std::chrono::system_clock::now();
           cwp.start_time        = std::chrono::system_clock::now();
-
+          cwp.all_time          = std::chrono::milliseconds(0);
           cwp.stat_per_hours.push_back( new input_stat );
           cwp.current_hour = cwp.stat_per_hours[0];
 
@@ -101,8 +101,6 @@ void ProcWatcher::GetWindowProp()
      
      this->cwindow_prop = &this->windows_info[ proc_name ];
 
-     // при первом импользовании 
-     // Free atoms
 }
 
 void ProcWatcher::CheckExistsWindows()
@@ -143,10 +141,17 @@ void ProcWatcher::Start()
                     is_window_changed );          
            
           std::cout << "Window -> " << this->cwindow_prop->name << " - " 
-                    << this->cwindow_prop->pid << "\n";
+                    << this->cwindow_prop->pid << " -  " 
+                    << this->cwindow_prop->all_time.count() << "\n";
 
           if( is_window_changed )
           {
+               auto now = std::chrono::system_clock::now();
+               this->cwindow_prop->all_time += std::chrono::duration_cast
+                    <std::chrono::milliseconds>
+                    (now - this->cwindow_prop->last_usage_window);
+
+               this->cwindow_prop->last_usage_window = now;
                this->GetFocusWindow();
                this->GetWindowProp();
 
