@@ -6,10 +6,7 @@
 
 
 namespace PwsReporter{
-     void Wait();
      void Report( int num_signal );
-     void WriteToJson();
-
 };
 
 #endif

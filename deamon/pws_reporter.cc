@@ -23,15 +23,12 @@ nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats )
 
 void PwsReporter::Report( int num_signal )
 {
-     std::cout << "Start reporting .....\n";
-
      nlohmann::json report_j;
      
      auto windows = proc_watcher->GetAllWindows();
 
      for( auto &&[key, wp] : *windows )
      {
-          std::cout << "Reporrw window " << wp.name << "\n";
           nlohmann::json j = {
                {"pid", wp.pid},
                {"window_open", wp.is_open},
@@ -41,7 +38,7 @@ void PwsReporter::Report( int num_signal )
           report_j[wp.name] = j;
      }
 
-     std::cout << report_j.dump();
-     
+     std::ofstream file_result("/home/beaver/pws/server/result.json");
+     file_result << report_j;
 }
 
