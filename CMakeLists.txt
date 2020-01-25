@@ -6,6 +6,7 @@ add_compile_options( "-Wall" "-Wextra"
      "-g3" "-ggdb"
      "-std=c++17"
      "-lpthread"
+     "-lnlohmanjson"
      )
 
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lX11 -Wall -Wextra -lpthread -g" )

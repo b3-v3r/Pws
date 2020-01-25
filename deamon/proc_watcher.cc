@@ -50,8 +50,7 @@ std::string ProcWatcher::GetProcName( int pid )
 
 void ProcWatcher::GetWindowProp() 
 {
-     int pid = -1;
-     WindowProperty cwp;
+     int pid = 0;
 
      std::string proc_name;
 
@@ -67,13 +66,26 @@ void ProcWatcher::GetWindowProp()
                0, 1, False, XA_CARDINAL, &type, &format, 
                &nItems, &bytesAfter, &propPid );
      
-     if( status == Success ) 
-          pid = *reinterpret_cast<pid_t*>(propPid);
+     if( status != Success || propPid == NULL) { // Wait change root window 
+          while( 1 ) {
+               XEvent xev;
+               XNextEvent(this->display, &xev);
+               
+               if( xev.type == FocusOut ) {
+                    this->GetFocusWindow();
+                    this->GetWindowProp();
 
+                    return;
+               }       
+          }
+     }
+
+     pid = *reinterpret_cast<pid_t*>(propPid);
      proc_name = this->GetProcName(pid);
 
      if( this->windows_info.find( proc_name ) == this->windows_info.end() )
      {
+          WindowProperty cwp;
           cwp.w = this->focus_window;
           cwp.name = proc_name;
           cwp.pid  = pid;
@@ -123,7 +135,7 @@ void ProcWatcher::Start()
 
      this->GetFocusWindow();
      this->GetWindowProp();
-
+     
      while( 1 ) 
      {
           InputWatcher::HandlerKeyPress( this->display, 
@@ -149,9 +161,13 @@ std::map< std::string, WindowProperty > ProcWatcher::windows_info = {  };
 WindowProperty *ProcWatcher::cwindow_prop = NULL;
 Window ProcWatcher::focus_window = 0;
 
+std::map< std::string, WindowProperty> *ProcWatcher::GetAllWindows()
+{
+     return &this->windows_info;
+}
+
 ProcWatcher::ProcWatcher()
 {
-    this->proc_w_thr = std::thread( &ProcWatcher::Start, this );
-    this->proc_w_thr.detach();
+     Start();
 }
 

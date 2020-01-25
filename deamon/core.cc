@@ -1,12 +1,12 @@
 #include "core.hpp"
 
 
-void AddProject( std::string pj_path )
+void PwsCore::AddProject( std::string pj_path )
 {
      pw.push_back( ProjectsWatcher::CreateProjectWatcher(pj_path) );
 }
 
-void HandleProccess()
+void PwsCore::HandleProccess()
 {
      proc_watcher = new ProcWatcher(); 
 }

@@ -60,6 +60,8 @@ private:
 
      void Start();
 public:
+     std::map< std::string, WindowProperty> *GetAllWindows();
+
      ProcWatcher();
      ~ProcWatcher();
 };

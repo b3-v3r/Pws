@@ -1,16 +1,63 @@
 #include "core.hpp"
+#include "pws_reporter.hpp"
+#include <sstream>
+
+void RunServer()
+{
+
+}
+
+nlohmann::json ParseConfigFile( char *filename )
+{
+     std::ifstream file(filename);
+     std::string config_text;
+
+     if( file.is_open() ) {
+          std::stringstream ss;
+
+          ss << file.rdbuf();
+          config_text = ss.str();
+     }else{
+          std::cout << "File config [" << filename << "] not exist\n";
+          exit(-1);
+     }
+     
+     nlohmann::json json_o = nlohmann::json::parse(config_text);
+     
+     if( json_o["projects"].is_null() || json_o["host"].is_null() ||
+               json_o["port"].is_null() )
+     {
+          std::cout << "Error reading config file, fix " << filename << " file\n";
+          exit(-1);
+     }
+
+     return json_o; 
+}
+
 
 int main( int argc, char **argv )
 {
-     AddProject( "/home/beaver/PwsProject/" );
-     AddProject( "/home/beaver/RimPkg/" );
-     
-     HandleProccess();   
+     if( argc != 2 )
+     {
+         std::cout << "Congrats !! It you first runing Pws :)\n";
+         std::cout << "Make  config file ? ( y/n ): ";
+          
+          char choice = getchar();
 
-     //
-     // all_stat->Commit(); or send hup to proccess
-     //
-    
-     std::this_thread::sleep_for( std::chrono::seconds(59999) );
+          if( choice == 'y' || choice == 'Y' )
+               RunServer();
+
+          exit(1);
+     }
+
+     nlohmann::json j = ParseConfigFile( argv[1] );
+
+     for( auto path : j["projects"] )
+          PwsCore::AddProject( path );
+
+     signal( SIGINT, &PwsReporter::Report );
+
+     PwsCore::HandleProccess();   
+
      return 0;
 }

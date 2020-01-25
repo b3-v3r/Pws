@@ -9,17 +9,17 @@
 
 #ifdef __linux__
      #include <pwd.h>
+     #include <nlohmann/json.hpp>
 #endif
 
 
 static std::vector< ProjectsWatcher* > pw;
 
 static ProcWatcher *proc_watcher;
-static WindowProperty *window_prop;
 
-void WriteAllStat(); 
-void AddProject( std::string pj_path );
-
-void HandleProccess();
+namespace PwsCore{
+     void AddProject( std::string pj_path ); 
+     void HandleProccess();
+}
 
 #endif

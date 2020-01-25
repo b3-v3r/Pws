@@ -2,20 +2,14 @@
 #define PWS_REP_H
 
 #include "core.hpp"
+#include <csignal>
 
 
-class PwsReporter
-{
-public:
-     
-     /// ptr *windows = 
-     //  
-     void Report( type_data  );
+namespace PwsReporter{
+     void Wait();
+     void Report( int num_signal );
      void WriteToJson();
 
-
-private:
-     
 };
 
 #endif

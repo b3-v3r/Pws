@@ -35,7 +35,8 @@ void ProjectsWatcher::AddFileToWatcher( std_fs::path file_path )
 {
      std::string file_path_str = file_path.u8string();
 
-     auto is_equal = [file_path_str]( FileInfo fi ) {
+     auto is_equal = [file_path_str]( FileInfo fi ) 
+     {
           return fi.path.u8string() == file_path_str;
      };
      
