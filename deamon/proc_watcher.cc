@@ -107,7 +107,7 @@ void ProcWatcher::CheckExistsWindows()
 {
      const auto now = std::chrono::high_resolution_clock::now();
 
-     for( auto [ key, window ] : this->windows_info )     
+     for( auto [ key, window ] : this->windows_info )
      {
           if( window.is_open )
           {
@@ -173,6 +173,14 @@ std::map< std::string, WindowProperty> *ProcWatcher::GetAllWindows()
 
 ProcWatcher::ProcWatcher()
 {
+     std::thread thr_timer( [this]{ 
+               while( 1 )
+               {
+                    std::this_thread::sleep_for( std::chrono::minutes(5) );
+                    this->CheckExistsWindows();
+               }
+     } );
+     thr_timer.detach();
      Start();
 }
 
