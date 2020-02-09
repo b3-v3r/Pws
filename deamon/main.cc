@@ -37,6 +37,7 @@ nlohmann::json ParseConfigFile( char *filename )
 
 int main( int argc, char **argv )
 {
+     PwsReporter::InitReporterParams();
      if( argc != 2 )
      {
          std::cout << "Congrats !! It you first runing Pws :)\n";
@@ -50,12 +51,15 @@ int main( int argc, char **argv )
           exit(1);
      }
 
-     nlohmann::json j = ParseConfigFile( argv[1] );
-
-     for( auto path : j["projects"] )
-          PwsCore::AddProject( path );
-
      signal( SIGINT, &PwsReporter::Report );
+     signal( SIGTERM, &PwsReporter::SaveAll );
+
+     nlohmann::json j = ParseConfigFile( argv[1] );
+     
+     for( auto path : j["projects"] )
+          PwsCore::AddProject(path);
+
+     PwsCore::HandleProjects(); // cahange 
 
      PwsCore::HandleProccess();   
 

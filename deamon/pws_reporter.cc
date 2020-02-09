@@ -21,9 +21,12 @@ nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats )
      return j;
 }
 
-void PwsReporter::Report( int num_signal )
+void ReportToFile( std::string path )
 {
      nlohmann::json report_j;
+
+     nlohmann::json windows_j;
+     nlohmann::json projects_j;
      
      auto windows = proc_watcher->GetAllWindows();
 
@@ -35,10 +38,51 @@ void PwsReporter::Report( int num_signal )
                {"stat_per_hours", GetStatAsJson( &wp.stat_per_hours) }
           };
 
-          report_j[wp.name] = j;
+          windows_j[wp.name] = j;
      }
 
-     std::ofstream file_result("/home/beaver/pws/server/result.json");
+     auto projects = ProjectsWatcher::GetProjects(); 
+
+     for( auto &[project_name, changed_files] : *projects )
+     {
+          nlohmann::json list_files;
+
+          for( auto &change_file : changed_files )
+          {
+               nlohmann::json j = {
+                    {"path", change_file.path},
+                    {"num_changes", change_file.num_changes},
+                    {"last_change_time", change_file.last_change_time}
+               };
+               list_files[project_name].push_back( j );
+          }
+
+          projects_j.push_back( list_files );
+     }
+      
+     report_j["time_start_deamon"] = PwsReporter::time_start_deamon;
+     report_j["time_save_report"] = time(NULL);
+
+     report_j["windows"] = windows_j;
+     report_j["projects"] = projects_j;
+
+     std::ofstream file_result( path );
      file_result << report_j;
 }
 
+void PwsReporter::Report( int num_signal )
+{
+     ReportToFile("/home/beaver/pws/stats/current_stat.json");
+}
+
+void PwsReporter::SaveAll( int num_signal )
+{
+     ReportToFile("/home/beaver/pws/stats/" + 
+               std::to_string( PwsReporter::time_start_deamon ) + ".json");
+     exit(0);     
+}
+
+void PwsReporter::InitReporterParams()
+{
+     PwsReporter::time_start_deamon = time(NULL);
+}

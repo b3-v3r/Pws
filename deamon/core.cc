@@ -3,7 +3,12 @@
 
 void PwsCore::AddProject( std::string pj_path )
 {
-     pw.push_back( ProjectsWatcher::CreateProjectWatcher(pj_path) );
+     ProjectsWatcher::AddProject( pj_path );
+}
+
+void PwsCore::HandleProjects()
+{
+     ProjectsWatcher::Run();
 }
 
 void PwsCore::HandleProccess()

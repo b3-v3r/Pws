@@ -60,26 +60,27 @@ struct FileInfo {
      // make func get formula 
 };
 
-class ProjectsWatcher {
-     
+class ProjectsWatcher { 
 private:
-     std::vector< FileInfo > changed_files;
-     std::thread watcher_thread;         
+     static std::thread watcher_thread;         
+     
+     static std::map< std::string, 
+          std::vector< FileInfo > >projects;
 
      bool has_TypeSupported( const std_fs::path *cpath );
      std::time_t GetTimeChangeFile( std::string );
      
      void ViewChangedFiles();
-     void AddFileToWatcher( std_fs::path file_path );
+     void AddFileToWatcher( std::string project_path, std_fs::path file_path );
 
-     void FindNewChangeFiles( std::string project_path );
+     void FindNewFiles( std::string project_path );
 
-     void Run( std::string project_path );
- 
+     void Handler();
+
 public:
-     static ProjectsWatcher *CreateProjectWatcher( std::string project_path );
-     void DestroyWatcher(); 
+     static std::map< std::string, std::vector<FileInfo>> *GetProjects();
+     static void AddProject( std::string project_path );
+
+     static void Run();
 };
-
-
 #endif

@@ -13,12 +13,11 @@
 #endif
 
 
-static std::vector< ProjectsWatcher* > pw;
-
 static ProcWatcher *proc_watcher;
 
-namespace PwsCore{
+namespace PwsCore {
      void AddProject( std::string pj_path ); 
+     void HandleProjects();
      void HandleProccess();
 }
 
