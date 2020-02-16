@@ -35,6 +35,7 @@ void ReportToFile( std::string path )
           nlohmann::json j = {
                {"pid", wp.pid},
                {"window_open", wp.is_open},
+               {"all_time", wp.all_time.count() },
                {"stat_per_hours", GetStatAsJson( &wp.stat_per_hours) }
           };
 
@@ -49,6 +50,8 @@ void ReportToFile( std::string path )
 
           for( auto &change_file : changed_files )
           {
+               if( change_file.num_changes == 0 )
+                    continue;
                nlohmann::json j = {
                     {"path", change_file.path},
                     {"num_changes", change_file.num_changes},
