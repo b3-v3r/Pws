@@ -25,29 +25,25 @@ void ProjectsWatcher::AddFileToWatcher( std::string project_path,
           std_fs::path file_path )
 {
      std::string file_path_str = file_path.u8string();
-
-     /*
+ 
      auto is_equal = [file_path_str]( FileInfo fi ) 
      {
           return fi.path.u8string() == file_path_str;
      };
      
-     auto is_found = std::find_if( this->pojects[projects].begin(),
-                                    this->changed_files.end(), is_equal);
+     auto is_found = std::find_if( this->projects[project_path].begin(),
+                                    this->projects[project_path].end(), is_equal);
      
-     if( is_found != this->changed_files.end() )
-          return;*/
+     if( is_found != this->projects[project_path].end() )
+          return;
 
      std::cout << "Add file " << file_path_str << "\n";
-     std::time_t time_change = this->GetTimeChangeFile( file_path_str ); 
-
+     std::time_t time_change = this->GetTimeChangeFile( file_path_str );  
+     
      this->projects[project_path].push_back( 
           {
                .path = file_path,
                .last_change_time = time_change,
-
-               .original_time_change = time_change,
-               .original_size = std_fs::file_size( file_path ),
 
                .num_changes = 0,
           });

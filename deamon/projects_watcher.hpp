@@ -53,11 +53,7 @@ struct FileInfo {
       
      std::time_t last_change_time;
 
-     std::time_t original_time_change;
-     std::size_t original_size;
-
      int32_t num_changes;    
-     // make func get formula 
 };
 
 class ProjectsWatcher { 
