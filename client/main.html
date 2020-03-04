@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <link rel="stylesheet" href="main.css">
+     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+     <title>PwsReport</title>
+</head>
+<body>
+     <div class="menu">
+          <li> <a onclick="showWindows()">Windows</a> </li>
+          <li> <a onclick="showProjects()">Projects</a> </li>
+     </div>
+
+     <div class="page">
+          <div class="windows">
+          </div>
+               
+          <div class="projects">
+          </div>
+          
+          <div class="containerProjectStats">
+               <div id="ProjectStat" style="width: 50vw; height: 50vh;"></div>
+          </div>
+
+     </div>
+</body>
+</html>
+
+
+<script>
+/*
+     strip long names programms with ...
+*/
+     var json_o;
+
+     var page          = document.getElementsByClassName("page")[0];
+
+     var all_projects  = page.getElementsByClassName("projects")[0];
+     var all_windows   = page.getElementsByClassName("windows")[0];
+
+     var windows_elems = all_windows.getElementsByClassName("window");
+     var projects_elems = all_projects.getElementsByClassName("project");
+
+
+     function FindWindow( name )
+     {
+          for( var i = 0; i < windows_elems.length; i++ )
+          {
+               if( windows_elems[i].getElementsByClassName("window-name")[0].getElementsByTagName("LI")[0].textContent.trim().toLowerCase() 
+                              == name.trim().toLowerCase() )
+                    return i
+          }
+
+          return -1;
+     }
+
+     function FindImgIconByName( name )
+     {
+          var path = "imgs/undefined.png"
+
+          switch( name.trim().toLowerCase() )
+          {
+               case "chromium":
+                    path = "imgs/Chromium.png"
+                    break;
+               
+               case "code":
+                    path = "imgs/Code.png" // visual studio code 
+                    break;
+
+               case "tilix":
+               case "bash":
+               case "xvrt":
+                    path = "imgs/Terminal.png"
+                    break;
+          }
+
+          return path
+     }
+
+     function msToMinAndSec(ms) {
+          var minutes = Math.floor(ms / 60000)
+          var seconds = ((ms % 60000) / 1000).toFixed(0)
+          return minutes + ":" + (seconds < 10 ? '0' : '') + seconds
+     }
+     
+     function checkSec( sec )
+     {
+          if( sec > 0 && sec <= 9 )
+               return "0"+sec;
+          return sec;
+     }
+
+     function getFormatTime( seconds )
+     {
+          if (seconds > 60)
+          {
+               var min = Math.trunc(seconds / 60);
+               var sec = seconds - ( min * 60 );
+               return  min + ":" + checkSec(sec);
+          }
+          return "00:"+checkSec(seconds);
+     }
+
+     function AddNewWindow( name, pid, CPM, CPS, all_press_keys, all_time )
+     {
+          var num_window = FindWindow( name )
+          var img_path = FindImgIconByName( name )
+
+          if( num_window == -1 ) 
+          {
+               const new_w = document.createElement("DIV");
+           
+               new_w.setAttribute("class", "window");
+               new_w.innerHTML = `
+               <div class="window-name">
+                    <img src="`+img_path+`" alt="`+name+`">
+                    <li>`+name.charAt(0).toUpperCase()+name.substring(1)+`</li>
+                    <p>`+pid+`</p>
+               </div>
+     
+               <div class="stat_text"><p>Chars per minute</p></div>
+               <div class="stat_num"><p>0</p></div>
+     
+               <div class="stat_text"><p>Chars per second</p></div>
+               <div class="stat_num"><p>0</p></div>
+     
+               
+               <div class="stat_text"><p>All num press keys</p></div>
+               <div class="stat_num"><p>0</p></div>
+          
+               <div class="time_using_window">
+                    <center>
+                         <p>Application usage time</p>
+                         <h3>`+msToMinAndSec(all_time)+`</h3>
+                    </center>
+               </div>
+               `;
+
+               var num_stats = new_w.getElementsByClassName("stat_num");
+               
+               if( all_press_keys != 0 )
+               {
+                    num_stats[0].innerHTML = "<p>" + Math.round(CPM) + "</p>";
+                    num_stats[1].innerHTML = "<p>" + CPS.toFixed(1) + "</p>";
+                    num_stats[2].innerHTML = "<p>" + Math.round(all_press_keys) + "</p>";
+               }
+
+               all_windows.appendChild(new_w)
+
+          }else {
+               
+               if( all_press_keys != 0 )
+               {
+                    var num_stats = windows_elems[num_window].getElementsByClassName("stat_num");
+                    num_stats[0].innerHTML = "<p>" + Math.round(CPM) + "</p>";
+                    num_stats[1].innerHTML = "<p>" + CPS.toFixed(1) + "</p>";
+                    num_stats[2].innerHTML = "<p>" + Math.round(all_press_keys) + "</p>";
+
+               }
+          }
+     }
+
+     function GetProjectNameFromPath( path )
+     {
+          var result = "";
+
+          for( var i = path.length-1;i != 0; i--)
+          {
+               if( path[i] == '/')
+                    break;
+               
+               result+=path[i];
+          }
+
+          return result.split("").reverse().join("");
+     }
+
+
+     function AddNewProject( project_path, files )
+     {
+          for( var j=0;j < projects_elems.length;j++ )
+          {
+               if( GetProjectNameFromPath(project_path.trim()) == 
+                    projects_elems[j].getElementsByTagName("H2")[0].textContent.trim() )
+                    return;
+          }
+
+          const new_w = document.createElement("DIV");
+          new_w.setAttribute("class", "project");
+
+
+          new_w.innerHTML = `<h2>`+GetProjectNameFromPath(project_path)+`</h2>`;
+
+          for( var i = 0; i < files.length; i++ )
+          {
+               const new_file_info = document.createElement("DIV");
+               new_file_info.setAttribute("class", "file_info");
+
+               new_file_info.innerHTML = `
+               <p class="file_path">` + files[i].path + `</p>
+               <p class="file_time">` + getFormatTime(files[i].last_change_time) + `  minutes ago</p>
+               <p class="file_changes">` + files[i].num_changes+` changes</p>`;
+
+               new_w.appendChild(new_file_info);
+          }
+          
+          all_projects.appendChild(new_w)
+     }
+
+     function GetStatData( data )
+     {
+          // Maller :  count changes
+
+
+          for( var i =0; i < window.json_o.projects.length; i++ )
+          {
+               var proj_path = window.json_o.projects[i].project_path;
+               var num_changes = 0;
+
+               for( var j=0; j < json_o.projects[i].files.length; j++)
+                    num_changes += json_o.projects[i].files[j].num_changes;
+               
+               var arr = [ GetProjectNameFromPath(proj_path), num_changes ];
+               data.addRow( [GetProjectNameFromPath(proj_path), num_changes] );
+          }
+          
+          return data;
+
+     }
+
+     function BuildStats()
+     {
+          google.charts.load("current", {packages:["corechart"]});
+          google.charts.setOnLoadCallback(drawChart);
+      
+
+          function drawChart() {
+
+               var data_user = new google.visualization.DataTable();
+               data_user.addColumn('string', 'Project name');
+               data_user.addColumn('number', 'Num changes');
+
+               var mod_data = GetStatData(data_user);
+
+               console.log()
+               var options = {
+                    title: '',
+                    pieHole: 0.6,
+                    slices: {
+                         0: { color: '#00cec9' },
+                         1: { color: '#ff6b81' },
+                         2: { color: '#bdd3ff'}
+                    },
+                    backgroundColor: 'transparent',
+                    legend         : 'none',
+                    chartArea      : {left: 10, top: 10, width: '95%', height: '95%'},
+                    
+                    
+                    pieSliceTextStyle: {
+                         color: 'black',
+                    }
+               };
+
+               var chart = new google.visualization.PieChart(document.getElementById('ProjectStat'));
+               chart.draw(mod_data, options);          
+          }
+     }
+     function WriteToPage( json_text )
+     {
+
+          window.json_o = JSON.parse(json_text);
+
+          //
+          // Write windows info 
+          //
+          for ( var i = 0; i < json_o.windows.length; i++ ) {
+
+               var wname = json_o.windows[i].name;
+               var wpid  = json_o.windows[i].pid;
+               
+               var wAll_used_time = json_o.windows[i].all_time;
+
+
+               var count_hours = 0;
+
+               for( var j in json_o.windows[i].stat_per_hours ) { // find last hour 
+                    count_hours += 1;
+               }
+
+               var current_CMP = json_o.windows[i].stat_per_hours[j].CPM;
+               var current_CMS = json_o.windows[i].stat_per_hours[j].CPS;
+               var current_num_press_keys  = json_o.windows[i].stat_per_hours[j].num_pressed_keys;
+
+               AddNewWindow( wname, wpid, current_CMP, current_CMS, current_num_press_keys, wAll_used_time )
+          }
+
+          //
+          // Write projects info 
+          //
+          for( var i =0; i < json_o.projects.length; i++ )
+          {
+               var project_path = json_o.projects[i].project_path;
+               AddNewProject( project_path, json_o.projects[i].files);
+          }
+
+          //
+          // Build stats
+          //
+          BuildStats();
+     }
+
+     function showProjects()
+     {
+          document.getElementsByClassName("projects")[0].style.display = "block";
+          document.getElementsByClassName("windows")[0].style.display = "none";
+     }
+
+     function showWindows()
+     {
+          document.getElementsByClassName("windows")[0].style.display = "block";
+          document.getElementsByClassName("projects")[0].style.display = "none";
+     }
+
+     function GetDataFromClient()
+     {
+          var xmlHttp = new XMLHttpRequest();
+          xmlHttp.open( "GET", "/get_json", false );
+          xmlHttp.send( null );
+          
+          WriteToPage(xmlHttp.responseText);
+
+     }
+
+
+     let timer_id = setTimeout( function tick() { 
+          
+          GetDataFromClient();
+
+          timer_id = setTimeout( tick, 10000)
+     }, 10000);
+
+
+     GetDataFromClient()
+
+</script>
