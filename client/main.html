@@ -15,6 +15,13 @@
           <li> <a onclick="showProjects()">Projects</a> </li>
      </div>
 
+     <div class="hour_holder">
+          <li onclick="LoadStatPrevHour()"> <  </li>
+          <p>Current hour</p>
+          <li onclick="LoadStatNextHour()"> >  </li>
+
+     </div>
+
      <div class="page">
           <div class="windows">
           </div>
@@ -36,6 +43,7 @@
      strip long names programms with ...
 */
      var json_o;
+     var json_text;
 
      var page          = document.getElementsByClassName("page")[0];
 
@@ -45,6 +53,7 @@
      var windows_elems = all_windows.getElementsByClassName("window");
      var projects_elems = all_projects.getElementsByClassName("project");
 
+     var hour = 0;
 
      function FindWindow( name )
      {
@@ -153,13 +162,21 @@
                all_windows.appendChild(new_w)
 
           }else {
-               
+
                if( all_press_keys != 0 )
                {
                     var num_stats = windows_elems[num_window].getElementsByClassName("stat_num");
                     num_stats[0].innerHTML = "<p>" + Math.round(CPM) + "</p>";
                     num_stats[1].innerHTML = "<p>" + CPS.toFixed(1) + "</p>";
                     num_stats[2].innerHTML = "<p>" + Math.round(all_press_keys) + "</p>";
+
+
+                    var all_time_elem = windows_elems[num_window].getElementsByClassName("time_using_window");
+                    all_time_elem[0].innerHTML = `
+                    <center>
+                         <p>Application usage time</p>
+                         <h3>`+msToMinAndSec(all_time)+`</h3>
+                    </center>`;
 
                }
           }
@@ -214,9 +231,6 @@
 
      function GetStatData( data )
      {
-          // Maller :  count changes
-
-
           for( var i =0; i < window.json_o.projects.length; i++ )
           {
                var proj_path = window.json_o.projects[i].project_path;
@@ -270,14 +284,41 @@
                chart.draw(mod_data, options);          
           }
      }
-     function WriteToPage( json_text )
+
+     function LoadStatNextHour()
+     {
+          if( hour+1 == 1 )
+               return;
+
+          hour += 1;
+          all_windows.innerHTML = " ";
+      
+          if( hour == 0 )
+               document.getElementsByClassName("hour_holder")[0].getElementsByTagName("p")[0].innerHTML = "Current hour"; 
+          else
+               document.getElementsByClassName("hour_holder")[0].getElementsByTagName("p")[0].innerHTML = Math.abs(hour) + " hours ago"; 
+          
+          WriteToPage();
+     }
+
+     function LoadStatPrevHour()
+     {
+          hour -= 1;
+          all_windows.innerHTML = " ";
+          document.getElementsByClassName("hour_holder")[0].getElementsByTagName("p")[0].innerHTML = Math.abs(hour) + " hours ago"; 
+
+          WriteToPage();
+     }
+
+     function WriteToPage()
      {
 
-          window.json_o = JSON.parse(json_text);
+          window.json_o = JSON.parse( window.json_text );
 
           //
           // Write windows info 
           //
+          
           for ( var i = 0; i < json_o.windows.length; i++ ) {
 
                var wname = json_o.windows[i].name;
@@ -285,12 +326,11 @@
                
                var wAll_used_time = json_o.windows[i].all_time;
 
-
                var count_hours = 0;
+               var j = json_o.windows[i].stat_per_hours.length - 1 + hour;
 
-               for( var j in json_o.windows[i].stat_per_hours ) { // find last hour 
-                    count_hours += 1;
-               }
+               if( j < 0 || j > json_o.windows[i].stat_per_hours.length-1 )
+                    continue;
 
                var current_CMP = json_o.windows[i].stat_per_hours[j].CPM;
                var current_CMS = json_o.windows[i].stat_per_hours[j].CPS;
@@ -332,7 +372,8 @@
           xmlHttp.open( "GET", "/get_json", false );
           xmlHttp.send( null );
           
-          WriteToPage(xmlHttp.responseText);
+          window.json_text = xmlHttp.responseText;
+          WriteToPage();
 
      }
 
