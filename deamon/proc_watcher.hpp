@@ -33,9 +33,8 @@ struct WindowProperty
      std::string name;
      pid_t pid;
 
-     std::chrono::system_clock::time_point last_usage_window;
-     std::chrono::system_clock::time_point start_time;
-     
+     std::chrono::system_clock::time_point focus_time;
+      
      std::chrono::milliseconds all_time;
      ChronoTimePoint hour_timer;
      // and usage current time 

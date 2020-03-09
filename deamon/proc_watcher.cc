@@ -76,7 +76,7 @@ void ProcWatcher::GetWindowProp()
                     this->GetWindowProp();
 
                     return;
-               }       
+               } 
           }
      }
 
@@ -90,8 +90,7 @@ void ProcWatcher::GetWindowProp()
           cwp.name = proc_name;
           cwp.pid  = pid;
 
-          cwp.last_usage_window = std::chrono::system_clock::now();
-          cwp.start_time        = std::chrono::system_clock::now();
+          cwp.focus_time        = std::chrono::system_clock::now();
           cwp.all_time          = std::chrono::milliseconds(0);
           cwp.stat_per_hours.push_back( new input_stat );
           cwp.current_hour = cwp.stat_per_hours[0];
@@ -100,8 +99,9 @@ void ProcWatcher::GetWindowProp()
      }
      
      this->cwindow_prop = &this->windows_info[ proc_name ];
-
+     this->cwindow_prop->focus_time = std::chrono::system_clock::now();
 }
+
 
 void ProcWatcher::CheckExistsWindows()
 {
@@ -139,19 +139,14 @@ void ProcWatcher::Start()
           InputWatcher::HandlerKeyPress( this->display, 
                     this->cwindow_prop->current_hour, 
                     is_window_changed );          
-           
-          std::cout << "Window -> " << this->cwindow_prop->name << " - " 
-                    << this->cwindow_prop->pid << " -  " 
-                    << this->cwindow_prop->all_time.count() << "\n";
 
           if( is_window_changed )
           {
                auto now = std::chrono::system_clock::now();
                this->cwindow_prop->all_time += std::chrono::duration_cast
                     <std::chrono::milliseconds>
-                    (now - this->cwindow_prop->last_usage_window);
-
-               this->cwindow_prop->last_usage_window = now;
+                    (now - this->cwindow_prop->focus_time);
+               
                this->GetFocusWindow();
                this->GetWindowProp();
 

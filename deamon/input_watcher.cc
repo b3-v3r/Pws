@@ -17,8 +17,6 @@ void InputWatcher::AddInterval( input_stat *current_hour )
      current_hour->num_pressed_keys++;
 
      last_interval = current_time;
-
-     std::cout << "Press key\n";
 }
 
 
@@ -35,23 +33,6 @@ float input_stat::CanculateCPS()
      
      return 1000 / mean_interv;
 }
-
-
-/*void InputWatcher::StartEventTimer()
-{
-     std::thread t( [ this ](){
-               
-               while( 1 )
-               { // check 
-                    std::this_thread::sleep_for( std::chrono::hours(1) );
-                    
-                    this->stat_per_hours.push_back( new struct input_stat );
-                    this->current_stat = (*(--this->stat_per_hours.end()));
-               }
-          });
-     t.detach();
-} make in reporter checking open windows and change hours */
-
 
 
 bool IgnoreKeyNum( unsigned int key )
@@ -92,7 +73,9 @@ void InputWatcher::HandlerKeyPress( Display *display,
           if( !IgnoreKeyNum( keycode ) )
                InputWatcher::AddInterval( current_hour );
 
-     } else if( xev.type == FocusOut )
+     } else if( xev.type == FocusOut ) {
           is_window_changed = true;
+     } 
+
 }
 

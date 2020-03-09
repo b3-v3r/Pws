@@ -4,8 +4,9 @@
 
 void RunServer()
 {
-
+     system( ("go run ../client/main.go " + std::to_string(getpid()) + " &").c_str() );
 }
+
 
 nlohmann::json ParseConfigFile( char *filename )
 {
@@ -46,8 +47,9 @@ int main( int argc, char **argv )
           char choice = getchar();
 
           if( choice == 'y' || choice == 'Y' )
-               RunServer();
-
+          {
+               std::cout << "Tets";
+          }
           exit(1);
      }
 
@@ -59,8 +61,9 @@ int main( int argc, char **argv )
      for( auto path : j["projects"] )
           PwsCore::AddProject(path);
 
-     PwsCore::HandleProjects(); // cahange 
+     RunServer();
 
+     PwsCore::HandleProjects(); // cahange 
      PwsCore::HandleProccess();   
 
      return 0;
