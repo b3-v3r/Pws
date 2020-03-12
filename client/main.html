@@ -91,10 +91,11 @@
           return path
      }
 
-     function msToMinAndSec(ms) {
+     function msToHoursMinAndSec(ms) {
+          var hours   = Math.floor( ms / 1000 / 60 / 60 )
           var minutes = Math.floor(ms / 60000)
           var seconds = ((ms % 60000) / 1000).toFixed(0)
-          return minutes + ":" + (seconds < 10 ? '0' : '') + seconds
+          return hours + ":" + minutes + ":" + (seconds < 10 ? '0' : '') + seconds
      }
      
      function checkSec( sec )
@@ -145,7 +146,7 @@
                <div class="time_using_window">
                     <center>
                          <p>Application usage time</p>
-                         <h3>`+msToMinAndSec(all_time)+`</h3>
+                         <h3>`+msToHoursMinAndSec(all_time)+`</h3>
                     </center>
                </div>
                `;
@@ -175,7 +176,7 @@
                     all_time_elem[0].innerHTML = `
                     <center>
                          <p>Application usage time</p>
-                         <h3>`+msToMinAndSec(all_time)+`</h3>
+                         <h3>`+msToHoursMinAndSec(all_time)+`</h3>
                     </center>`;
 
                }
