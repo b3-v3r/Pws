@@ -1,3 +1,7 @@
+/*   
+ * Copyright (C) Illya Adamov
+ */
+
 #include "core.hpp"
 #include "pws_reporter.hpp"
 #include <sstream>

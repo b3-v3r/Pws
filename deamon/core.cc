@@ -1,5 +1,8 @@
-#include "core.hpp"
+/*   
+ * Copyright (C) Illya Adamov
+ */
 
+#include "core.hpp"
 
 void PwsCore::AddProject( std::string pj_path )
 {

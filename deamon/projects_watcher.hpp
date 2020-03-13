@@ -1,3 +1,7 @@
+/*   
+ * Copyright (C) Illya Adamov
+ */
+
 #ifndef PJ_WATHER_H
 #define PJ_WATHER_H
 

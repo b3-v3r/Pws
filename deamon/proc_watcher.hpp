@@ -1,3 +1,7 @@
+/*   
+ * Copyright (C) Illya Adamov
+ */
+
 #ifndef PROC_WATCHER_H
 #define PROC_WATCHER_H
 

@@ -1,3 +1,7 @@
+/*   
+ * Copyright (C) Illya Adamov
+ */
+
 #include "core.hpp"
 #include "proc_watcher.hpp"
 

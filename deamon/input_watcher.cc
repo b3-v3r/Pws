@@ -1,3 +1,7 @@
+/*   
+ * Copyright (C) Illya Adamov
+ */
+
 #include "input_watcher.hpp"
 #include <iostream>
 

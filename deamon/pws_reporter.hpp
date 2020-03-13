@@ -1,3 +1,7 @@
+/*   
+ * Copyright (C) Illya Adamov
+ */
+
 #ifndef PWS_REP_H 
 #define PWS_REP_H
 

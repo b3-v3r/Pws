@@ -1,3 +1,7 @@
+/*   
+ * Copyright (C) Illya Adamov
+ */
+
 #include "pws_reporter.hpp"
 
 time_t GetDiffTime( time_t change_time )

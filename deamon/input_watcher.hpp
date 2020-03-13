@@ -1,3 +1,7 @@
+/*   
+ * Copyright (C) Illya Adamov
+ */
+
 #ifndef INPUT_WATHER_H
 #define INPUT_WATHER_H
 

@@ -1,3 +1,7 @@
+/* 
+ * Copyright (C) Illya Adamov
+ */
+
 #ifndef CORE_H
 #define CORE_H
 
