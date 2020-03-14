@@ -8,9 +8,21 @@
 void ProcWatcher::GetFocusWindow()
 {
      int i = 0;
+
      XGetInputFocus( this->display, &this->focus_window, &i );
+
+     if( this->focus_window == None )
+     {
+          sleep(1);
+          GetFocusWindow();
+     }
      XSelectInput( this->display, this->focus_window, KeyPressMask | 
-               FocusChangeMask);//KeyReleaseMask )
+               FocusChangeMask );//KeyReleaseMask )
+
+     // For event destroyed window 
+     Atom w_del_a = XInternAtom(this->display, "WM_DELETE_WINDOW", False);
+     XSetWMProtocols( this->display, this->focus_window, &w_del_a, 1);
+
 } 
 
 std::string ProcWatcher::GetProcName( int pid )

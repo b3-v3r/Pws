@@ -68,17 +68,23 @@ void InputWatcher::HandlerKeyPress( Display *display,
 {
      XEvent xev;
      XNextEvent( display, &xev );
+     unsigned int keycode;
 
-     if( xev.type == KeyPress )
+     switch( xev.type )
      {
-          unsigned int keycode = XkbKeycodeToKeysym( display, xev.xkey.keycode, 0,
-                    xev.xkey.state & ShiftMask ? 1 : 0 );
+          case KeyPress:
+               keycode = XkbKeycodeToKeysym( display, xev.xkey.keycode, 0,
+                         xev.xkey.state & ShiftMask ? 1 : 0 );
 
-          if( !IgnoreKeyNum( keycode ) )
-               InputWatcher::AddInterval( current_hour );
+               if( !IgnoreKeyNum( keycode ) )
+                    InputWatcher::AddInterval( current_hour );
+               break;
 
-     } else if( xev.type == FocusOut ) {
-          is_window_changed = true;
+          case FocusOut:
+               is_window_changed = true;
+               break;
+          case ClientMessage: // destroyed window 
+               break;     
      } 
 
 }
