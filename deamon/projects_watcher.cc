@@ -41,7 +41,6 @@ void ProjectsWatcher::AddFileToWatcher( std::string project_path,
      if( is_found != this->projects[project_path].end() )
           return;
 
-     std::cout << "Add file " << file_path_str << "\n";
      std::time_t time_change = this->GetTimeChangeFile( file_path_str );  
      
      this->projects[project_path].push_back( 

@@ -29,8 +29,7 @@ nlohmann::json ParseConfigFile( char *filename )
      
      nlohmann::json json_o = nlohmann::json::parse(config_text);
      
-     if( json_o["projects"].is_null() || json_o["host"].is_null() ||
-               json_o["port"].is_null() )
+     if( json_o["projects"].is_null() )
      {
           std::cout << "Error reading config file, fix " << filename << " file\n";
           exit(-1);
@@ -43,17 +42,10 @@ nlohmann::json ParseConfigFile( char *filename )
 int main( int argc, char **argv )
 {
      PwsReporter::InitReporterParams();
+
      if( argc != 2 )
      {
-         std::cout << "Congrats !! It you first runing Pws :)\n";
-         std::cout << "Make  config file ? ( y/n ): ";
-          
-          char choice = getchar();
-
-          if( choice == 'y' || choice == 'Y' )
-          {
-               std::cout << "Tets";
-          }
+          std::cout << "Congrats !! It you first runing Pws :)\n";
           exit(1);
      }
 
