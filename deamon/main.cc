@@ -46,21 +46,31 @@ int main( int argc, char **argv )
      if( argc != 2 )
      {
           std::cout << "Congrats !! It you first runing Pws :)\n";
+          std::cout << "Example runing: ./PwsCore config.json\n";
           exit(1);
      }
 
-     signal( SIGINT, &PwsReporter::Report );
-     signal( SIGTERM, &PwsReporter::SaveAll );
+     pid_t pid = fork();
 
-     nlohmann::json j = ParseConfigFile( argv[1] );
-     
-     for( auto path : j["projects"] )
-          PwsCore::AddProject(path);
+     if( pid == 0 )
+     {
+          signal( SIGINT, &PwsReporter::Report );
+          signal( SIGTERM, &PwsReporter::SaveAll );
 
-     RunServer();
+          nlohmann::json j = ParseConfigFile( argv[1] );
+          
+          for( auto path : j["projects"] )
+               PwsCore::AddProject(path);
 
-     PwsCore::HandleProjects(); // cahange 
-     PwsCore::HandleProccess();   
+          RunServer();
+
+          PwsCore::HandleProjects();  
+          PwsCore::HandleProccess();   
+
+     }else if( pid > 0 ) {
+          std::cout << "Pws start\n";
+          exit(0);
+     }
 
      return 0;
 }

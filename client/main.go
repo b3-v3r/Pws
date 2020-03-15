@@ -25,7 +25,6 @@ func ReadFile(filename string) (string, bool) {
 
 func data_handler(w http.ResponseWriter, r *http.Request) {
 
-	fmt.Println("Getting data json ")
 	file_text, err := ReadFile("../stats/current_stat.json")
 
 	if err {
@@ -44,7 +43,7 @@ func data_handler(w http.ResponseWriter, r *http.Request) {
 func main() {
 
 	if len(os.Args) != 2 {
-		fmt.Println("Usage example: go run main.go [pid pws deamon]")
+		fmt.Println("This programm not start byhand")
 		os.Exit(0)
 	}
 
@@ -59,7 +58,6 @@ func main() {
 		fmt.Println("test")
 	}
 
-	fmt.Println(os.Getwd())
 	http.Handle("/", http.FileServer(http.Dir(".")))
 
 	log.Fatal(http.ListenAndServe(":2020", nil))

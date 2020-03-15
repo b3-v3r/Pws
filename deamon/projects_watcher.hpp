@@ -50,7 +50,7 @@ const std::list< std::string > supported_types_file =
 };
 
 
-#define DELAY_CHECKS_SEC 1
+#define DELAY_CHECKS_SEC 5 
 
 struct FileInfo {
      std_fs::path path;
