@@ -39,6 +39,7 @@ nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats )
 
 void ReportToFile( std::string path )
 {
+     std::cout << "Report file " << path << "\n";
      nlohmann::json report_j;
 
      nlohmann::json projects_j;
@@ -99,13 +100,13 @@ void ReportToFile( std::string path )
 
 void PwsReporter::Report( int num_signal )
 {
-     ReportToFile("/home/beaver/pws/stats/current_stat.json");
+     ReportToFile("../stats/current_stat.json");
 }
 
 void PwsReporter::SaveAll( int num_signal )
 {
      PwsReporter::Report( 0 );
-     ReportToFile("/home/beaver/pws/stats/" + 
+     ReportToFile("../stats/" + 
                std::to_string( PwsReporter::time_start_deamon ) + ".json");
      exit(0);     
 }

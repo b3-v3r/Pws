@@ -68,7 +68,7 @@ int main( int argc, char **argv )
           PwsCore::HandleProccess();   
 
      }else if( pid > 0 ) {
-          std::cout << "Pws start\n";
+          std::cout << "Pws deamon start\n";
           exit(0);
      }
 
