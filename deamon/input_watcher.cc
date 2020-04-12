@@ -5,6 +5,7 @@
 #include "input_watcher.hpp"
 #include <iostream>
 
+
 void InputWatcher::AddInterval( input_stat *current_hour )
 {
      static ChronoTimePoint last_interval = std::chrono::high_resolution_clock::now();
@@ -36,56 +37,5 @@ float input_stat::CanculateCPS()
           (float)(this->num_pressed_keys);
      
      return 1000 / mean_interv;
-}
-
-
-bool IgnoreKeyNum( unsigned int key )
-{
-     static const unsigned int ignore_list_keys[] = { 
-          0xff08, 0xffff, // backspace delete 
-          0xff51, 0xff52, 0xff53, 0xff54, // down, up, left rigth
-          0xffe9, 0xffea, // ALT_L    ALT_R 
-
-          0xffe1, 0xffe2, // SHIFT_L  SHIFT_R
-          0xffe3, 0xffe4, // CTRL_L   CTRL_R 
-
-          // F1...F12
-          0xffbe, 0xffbf, 0xffc0,0xffc1,
-          0xffc2, 0xffc3, 0xffc4, 0xff5,
-          0xffc7, 0xffc8, 0xffc9
-     };
-     for( unsigned int ikey : ignore_list_keys )
-          if( key == ikey )
-               return true;
-
-     return false;
-}
-
-
-void InputWatcher::HandlerKeyPress( Display *display, 
-          input_stat *current_hour,
-          bool &is_window_changed )
-{
-     XEvent xev;
-     XNextEvent( display, &xev );
-     unsigned int keycode;
-
-     switch( xev.type )
-     {
-          case KeyPress:
-               keycode = XkbKeycodeToKeysym( display, xev.xkey.keycode, 0,
-                         xev.xkey.state & ShiftMask ? 1 : 0 );
-
-               if( !IgnoreKeyNum( keycode ) )
-                    InputWatcher::AddInterval( current_hour );
-               break;
-
-          case FocusOut:
-               is_window_changed = true;
-               break;
-          case ClientMessage: // destroyed window 
-               break;     
-     } 
-
 }
 

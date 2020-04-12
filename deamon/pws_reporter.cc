@@ -39,7 +39,6 @@ nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats )
 
 void ReportToFile( std::string path )
 {
-     std::cout << "Report file " << path << "\n";
      nlohmann::json report_j;
 
      nlohmann::json projects_j;

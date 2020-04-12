@@ -46,10 +46,6 @@ struct input_stat
 class InputWatcher{
 
 public:
-     static void HandlerKeyPress( Display *display, 
-               input_stat *current_hour,
-               bool &is_window_changed );
-
      static void AddInterval( input_stat *current_hour );
 };
 

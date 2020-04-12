@@ -12,6 +12,14 @@ void RunServer()
 }
 
 
+/* TODO
+ * Make configurate project from web page 
+ * Notes and tasks 
+ * Change design web page 
+ * Logging errors
+ * Grap pixmap form window X11
+ */
+
 nlohmann::json ParseConfigFile( char *filename )
 {
      std::ifstream file(filename);
@@ -38,9 +46,15 @@ nlohmann::json ParseConfigFile( char *filename )
      return json_o; 
 }
 
+int err_handler( Display *d, XErrorEvent *ev )
+{
+     std::cout << "Error x11 " << ev->error_code << "\n";  
+     return 0;
+}
 
 int main( int argc, char **argv )
 {
+     XSetErrorHandler( err_handler );
      PwsReporter::InitReporterParams();
 
      if( argc != 2 )

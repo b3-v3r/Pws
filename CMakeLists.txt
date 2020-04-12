@@ -9,7 +9,7 @@ add_compile_options( "-Wall" "-Wextra"
      "-lnlohmanjson"
      )
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lX11 -Wall -Wextra -lpthread -g" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lX11 -lXmu -Wall -Wextra -lpthread -g" )
 
 file( GLOB
      CPPS "${PROJECT_SOURCE_DIR}/deamon/*.cc"
