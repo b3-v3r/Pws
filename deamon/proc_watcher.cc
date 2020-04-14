@@ -144,19 +144,16 @@ void ProcWatcher::CheckExistsWindows()
 
      for( auto [ key, window ] : this->windows_info )
      {
-          if( window.is_open )
+          auto diff_time = std::chrono::duration_cast<std::chrono::seconds>
+               (now - window.hour_timer);
+          
+          if( diff_time.count() > 3600)
           {
-               auto diff_time = std::chrono::duration_cast<std::chrono::seconds>
-                    (now - window.hour_timer);
-               
-               if( diff_time.count() > 3600)
-               {
-                    window.stat_per_hours.push_back( new input_stat );
-                    window.current_hour = window.stat_per_hours
-                         [ window.stat_per_hours.size() ];
-               }
-
+               window.stat_per_hours.push_back( new input_stat );
+               window.current_hour = window.stat_per_hours
+                    [ window.stat_per_hours.size() ];
           }
+
      }
 }
 
@@ -212,8 +209,9 @@ void ProcWatcher::Start()
                     {
                          int keycode = i * 8 + (int)log2( 
                                    current_keys[i] ^ last_keys[i] );
+                         int keysum = XKeycodeToKeysym(this->display, keycode, 0);
 
-                         if( !IgnoreKeyNum( keycode) )
+                         if( !IgnoreKeyNum(keysum) )
                               InputWatcher::AddInterval( this->cwindow_prop->current_hour );
                     }
                }
@@ -226,7 +224,6 @@ void ProcWatcher::Start()
 
           if( this->focus_window != last_window )
           {
-               this->GetWindowProp();
 
                last_window = this->focus_window;
 
@@ -234,6 +231,8 @@ void ProcWatcher::Start()
                this->cwindow_prop->all_time += std::chrono::duration_cast
                     <std::chrono::milliseconds>
                     (now - this->cwindow_prop->focus_time);
+
+               this->GetWindowProp();
           }
      }
 }

@@ -51,8 +51,8 @@ void ReportToFile( std::string path )
           nlohmann::json j = {
                {"name", wp.name},
                {"pid", wp.pid},
+               {"all_time", wp.all_time.count()},
                {"window_open", wp.is_open},
-               {"all_time", wp.all_time.count() },
                {"stat_per_hours", GetStatAsJson( &wp.stat_per_hours) }
           };
 
