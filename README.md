@@ -1,4 +1,7 @@
-# Pws
+# Pws 
+[![Open Source Love png2](https://badges.frapsoft.com/os/v2/open-source.png?v=103)](https://github.com/b3-v3r/Pws)
+[![License](https://img.shields.io/github/license/b3-v3r/Pws)](https://github.com/b3-v3r/Pws/blob/master/LICENSE)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/b3-v3r/Pws?color=orange)
 
 Pws is open source application for watching your activity on all applicatoins and your projects. Based on X11 lib.
 ## Features
@@ -21,10 +24,10 @@ Pws is open source application for watching your activity on all applicatoins an
 	> make
 ## Using 
 - Example make configuration file ( *recomended filename config.json*  )
-
-	    {
-		    "projects": ["path/to/project1", "path/to/project2"]
-	    }
+	
+		{
+			"projects": ["path/to/project1", "path/to/project2"]
+		}
 	    
 - Start tool 
 
