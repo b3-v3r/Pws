@@ -12,7 +12,7 @@ Pws is open source application for watching your activity on all applicatoins an
 	 
  - X11lib 
  - nlohmanjson ( [https://github.com/nlohmann/json](https://github.com/nlohmann/json) )
- - Papirus Icons ( [https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/) )
+ - Papirus Icons ( [https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/](https://github.com/PapirusDevelopmentTeam/papirus-icon-theme/) ) (Built in)
 
 ## Install
     > git clone https://github.com/b3-v3r/Pws.git
