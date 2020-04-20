@@ -13,6 +13,9 @@
      <div class="menu">
           <li> <a onclick="showWindows()">Windows</a> </li>
           <li> <a onclick="showProjects()">Projects</a> </li>
+          <!-- <li> <a onclick="showNotes()">Notes</a> </li> -->
+
+
      </div>
 
      <div class="hour_holder">
@@ -32,6 +35,18 @@
           <div class="containerProjectStats">
                <div id="ProjectStat" style="width: 50vw; height: 50vh;"></div>
           </div>
+          
+
+          <!--<div class="settings">
+               <p>Settings</p>
+               
+               <h2>Choice icons theme</h2>
+               <input type="input" placeholder="Theme floader">
+               
+               <h2>Add project</h2>
+               
+
+          </div>-->
 
      </div>
 </body>
@@ -39,9 +54,7 @@
 
 
 <script>
-/*
-     strip long names programms with ...
-*/
+
      var json_o;
      var json_text;
 
@@ -65,30 +78,6 @@
           }
 
           return -1;
-     }
-
-     function FindImgIconByName( name )
-     {
-          var path = "imgs/Undefined.png"
-
-          switch( name.trim().toLowerCase() )
-          {
-               case "chromium":
-                    path = "imgs/Chromium.png"
-                    break;
-               
-               case "code":
-                    path = "imgs/Code.png" // visual studio code 
-                    break;
-
-               case "tilix":
-               case "bash":
-               case "xvrt":
-                    path = "imgs/Terminal.png"
-                    break;
-          }
-
-          return path
      }
 
      function msToHoursMinAndSec(millisec) {
@@ -127,26 +116,29 @@
           {
                var min = Math.trunc(seconds / 60);
                var sec = seconds - ( min * 60 );
-               return  min + ":" + checkSec(sec);
+               return  min + ":" + checkSec(sec); 
           }
           return "00:"+checkSec(seconds);
      }
 
-     function AddNewWindow( name, pid, CPM, CPS, all_press_keys, all_time )
+     function AddNewWindow( name, pid, CPM, CPS, all_press_keys, all_time, img_path )
      {
           var num_window = FindWindow( name )
-          var img_path = FindImgIconByName( name )
 
-          if( num_window == -1 ) 
+          if( num_window == -1 )
           {
                const new_w = document.createElement("DIV");
            
                new_w.setAttribute("class", "window");
                new_w.innerHTML = `
+
+               <div class="window-name-border">
                <div class="window-name">
                     <img src="`+img_path+`" alt="`+name+`">
                     <li>`+name.charAt(0).toUpperCase()+name.substring(1)+`</li>
                     <p>`+pid+`</p>
+               </div>
+
                </div>
      
                <div class="stat_text"><p>Chars per minute</p></div>
@@ -165,7 +157,7 @@
                          <h3>`+msToHoursMinAndSec(all_time)+`</h3>
                     </center>
                </div>
-               `;
+               `;   
 
                var num_stats = new_w.getElementsByClassName("stat_num");
                
@@ -352,8 +344,10 @@
                var current_CMP = json_o.windows[i].stat_per_hours[j].CPM;
                var current_CMS = json_o.windows[i].stat_per_hours[j].CPS;
                var current_num_press_keys  = json_o.windows[i].stat_per_hours[j].num_pressed_keys;
+               var img_path = json_o.windows[i].path_icon;
 
-               AddNewWindow( wname, wpid, current_CMP, current_CMS, current_num_press_keys, wAll_used_time )
+               console.log( img_path)
+               AddNewWindow( wname, wpid, current_CMP, current_CMS, current_num_press_keys, wAll_used_time , img_path)
           }
 
           //
@@ -375,13 +369,25 @@
      {
           document.getElementsByClassName("projects")[0].style.display = "block";
           document.getElementsByClassName("windows")[0].style.display = "none";
+          document.getElementsByClassName("settings")[0].style.display = "none";
+
      }
 
      function showWindows()
      {
           document.getElementsByClassName("windows")[0].style.display = "block";
           document.getElementsByClassName("projects")[0].style.display = "none";
+          document.getElementsByClassName("settings")[0].style.display = "none";
+
      }
+
+     // function showNotes()
+     // {
+     //      document.getElementsByClassName("notes")[0].style.display = "block";
+     //      document.getElementsByClassName("projects")[0].style.display = "none";
+     //      document.getElementsByClassName("windows")[0].style.display = "none";
+
+     // }
 
      function GetDataFromClient()
      {

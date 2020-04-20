@@ -4,8 +4,10 @@
 
 #include "core.hpp"
 
+
 void PwsCore::AddProject( std::string pj_path )
 {
+     PwsCore::config.projects.push_back( pj_path );
      ProjectsWatcher::AddProject( pj_path );
 }
 

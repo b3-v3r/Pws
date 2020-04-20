@@ -11,9 +11,14 @@
 #include <string>
 
 #include <fstream>
+#include <filesystem>
 
 #include <vector>
 #include <map>
+
+
+#include <unistd.h>
+#include <stdio.h>
 
 #ifdef __linux__
      #include <X11/Xlib.h>
@@ -26,12 +31,14 @@
 /*
  * Make checking reusing window
  */
+namespace std_fs = std::filesystem;
 
 struct WindowProperty
 {
      std::vector< struct input_stat *> stat_per_hours;
      struct input_stat *current_hour;
 
+     std::string path_icon;
      Window w;
      bool is_open;
      std::string name;
@@ -58,6 +65,8 @@ private:
 
 
      std::string GetProcName( int pid );
+     std::string GetIconWindow( std::string proc_name );
+
      void GetFocusWindow();
      void GetWindowProp();
      void CheckExistsWindows();

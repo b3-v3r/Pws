@@ -79,6 +79,26 @@ std::string ProcWatcher::GetProcName( int pid )
      return proc_name_res;
 }
 
+std::string ProcWatcher::GetIconWindow( std::string proc_name )
+{
+     if( proc_name.find("terminal") != std::string::npos ) // xfce4-terminal -> terminal
+          proc_name = "terminal";
+     
+     std::string back_path = "../client/icons";
+     for( auto &picon : std_fs::recursive_directory_iterator(back_path) )
+     {
+          std::string filename = picon.path().filename(); 
+          
+          if( filename.find(proc_name) != std::string::npos )
+          {
+               std::string full_path = picon.path();
+               return full_path.erase(0, full_path.find("icons"));
+          }
+     }
+
+     return "imgs/Undefined.jpg";
+}
+
 void ProcWatcher::GetWindowProp() 
 {
      int pid = 0;
@@ -123,7 +143,10 @@ void ProcWatcher::GetWindowProp()
           cwp.name = proc_name;
           cwp.pid  = pid;
 
+          cwp.path_icon = GetIconWindow( cwp.name );
+
           cwp.focus_time        = std::chrono::system_clock::now();
+          cwp.hour_timer        = std::chrono::system_clock::now();
           cwp.all_time          = std::chrono::milliseconds(0);
           cwp.stat_per_hours.push_back( new input_stat );
           cwp.current_hour = cwp.stat_per_hours[0];
@@ -142,18 +165,23 @@ void ProcWatcher::CheckExistsWindows()
 {
      const auto now = std::chrono::high_resolution_clock::now();
 
-     for( auto [ key, window ] : this->windows_info )
-     {
+     for( auto &&[ key, window ] : this->windows_info ) {
+
           auto diff_time = std::chrono::duration_cast<std::chrono::seconds>
                (now - window.hour_timer);
           
-          if( diff_time.count() > 3600)
+          if( diff_time.count() > 3600 )
           {
+               
                window.stat_per_hours.push_back( new input_stat );
                window.current_hour = window.stat_per_hours
-                    [ window.stat_per_hours.size() ];
-          }
+                    [ window.stat_per_hours.size()-1 ];
 
+               window.hour_timer = std::chrono::system_clock::now();
+               window.current_hour->all_interval = 0;
+               window.current_hour->num_pressed_keys = 0;
+
+          }
      }
 }
 
@@ -207,8 +235,7 @@ void ProcWatcher::Start()
                {
                     if( (int)current_keys[i] != 0 )
                     {
-                         int keycode = i * 8 + (int)log2( 
-                                   current_keys[i] ^ last_keys[i] );
+                         int keycode = i * 8 + (int)log2( current_keys[i] ^ last_keys[i] );
                          int keysum = XKeycodeToKeysym(this->display, keycode, 0);
 
                          if( !IgnoreKeyNum(keysum) )
@@ -253,11 +280,12 @@ ProcWatcher::ProcWatcher()
      std::thread thr_timer( [this]{ 
                while( 1 )
                {
-                    std::this_thread::sleep_for( std::chrono::minutes(5) );
+                    std::this_thread::sleep_for( std::chrono::seconds(5) );
                     this->CheckExistsWindows();
                }
      } );
      thr_timer.detach();
+
      Start();
 }
 

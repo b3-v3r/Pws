@@ -13,7 +13,8 @@ time_t GetDiffTime( time_t change_time )
 }
 
 
-nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats )
+nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats, 
+          long all_time_ms )
 {
      nlohmann::json j = nlohmann::json::array();
 
@@ -27,7 +28,7 @@ nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats )
           stat_j["num_pressed_keys"] = stat->num_pressed_keys;
 
           stat_j["CPS"] = stat->CanculateCPS();
-          stat_j["CPM"] = stat->CanculateCPM();
+          stat_j["CPM"] = stat->CanculateCPM( all_time_ms );
 
           j.push_back(stat_j);
 
@@ -36,6 +37,7 @@ nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats )
 
      return j;
 }
+
 
 void ReportToFile( std::string path )
 {
@@ -50,10 +52,11 @@ void ReportToFile( std::string path )
      {
           nlohmann::json j = {
                {"name", wp.name},
+               {"path_icon", wp.path_icon},
                {"pid", wp.pid},
                {"all_time", wp.all_time.count()},
                {"window_open", wp.is_open},
-               {"stat_per_hours", GetStatAsJson( &wp.stat_per_hours) }
+               {"stat_per_hours", GetStatAsJson( &wp.stat_per_hours, wp.all_time.count()) }
           };
 
           windows_j.push_back(j);

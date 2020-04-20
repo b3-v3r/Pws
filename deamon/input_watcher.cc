@@ -25,9 +25,11 @@ void InputWatcher::AddInterval( input_stat *current_hour )
 }
 
 
-float input_stat::CanculateCPM()
+float input_stat::CanculateCPM( long all_time_ms )
 {
-     return CanculateCPS() * 60;
+     if( num_pressed_keys == 0  || all_time_ms < 60000 )
+          return num_pressed_keys;
+     return this->num_pressed_keys / (all_time_ms / 1000 / 60); 
 }
 
 

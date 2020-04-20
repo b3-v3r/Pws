@@ -13,6 +13,7 @@ void RunServer()
 
 
 /* TODO
+ * Make reopen config in real-time
  * Make configurate project from web page 
  * Notes and tasks 
  * Change design web page 
@@ -37,7 +38,7 @@ nlohmann::json ParseConfigFile( char *filename )
      
      nlohmann::json json_o = nlohmann::json::parse(config_text);
      
-     if( json_o["projects"].is_null() )
+     if( json_o["projects"].is_null() && json_o["theme_icons"].is_null())
      {
           std::cout << "Error reading config file, fix " << filename << " file\n";
           exit(-1);

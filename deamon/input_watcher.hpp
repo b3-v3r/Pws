@@ -36,11 +36,11 @@ typedef std::chrono::milliseconds chrono_millisec;
 
 struct input_stat
 {
-     int32_t all_interval     = 0;
+     int64_t all_interval     = 0;
      int32_t num_pressed_keys = 0;     
 
      float CanculateCPS(); // chars per second
-     float CanculateCPM(); // chars per minute
+     float CanculateCPM( long all_time_ms ); // chars per minute
 };
 
 class InputWatcher{

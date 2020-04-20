@@ -20,7 +20,13 @@
 static ProcWatcher *proc_watcher;
 
 namespace PwsCore {
+     struct{
+          std::vector< std::string >projects;
+     }config;
+
+     void AddIconTheme( std::string icons_theme );
      void AddProject( std::string pj_path ); 
+
      void HandleProjects();
      void HandleProccess();
 }

@@ -40,6 +40,7 @@ func data_handler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+
 func main() {
 
 	if len(os.Args) != 2 {
@@ -48,7 +49,6 @@ func main() {
 	}
 
 	http.HandleFunc("/get_json", data_handler)
-
 	cdir, _ := os.Getwd()
 	test := fmt.Sprintf("%s%s", cdir, "/../client/")
 
@@ -58,7 +58,9 @@ func main() {
 		fmt.Println("test")
 	}
 
-	http.Handle("/", http.FileServer(http.Dir(".")))
+
+	http.Handle("/icons", http.FileServer(http.Dir("icons/") ) )
+	http.Handle("/", http.FileServer(http.Dir(".") ) )
 
 	log.Fatal(http.ListenAndServe(":2020", nil))
 }
