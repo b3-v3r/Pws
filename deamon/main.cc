@@ -38,7 +38,7 @@ nlohmann::json ParseConfigFile( char *filename )
      
      nlohmann::json json_o = nlohmann::json::parse(config_text);
      
-     if( json_o["projects"].is_null() && json_o["theme_icons"].is_null())
+     if( json_o["projects"].is_null() )
      {
           std::cout << "Error reading config file, fix " << filename << " file\n";
           exit(-1);
@@ -74,6 +74,7 @@ int main( int argc, char **argv )
 
           nlohmann::json j = ParseConfigFile( argv[1] );
           
+
           for( auto path : j["projects"] )
                PwsCore::AddProject(path);
 
