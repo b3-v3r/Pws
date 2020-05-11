@@ -2,19 +2,22 @@
 <html lang="en">
 <head>
      <meta charset="UTF-8">
+
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <meta http-equiv="X-UA-Compatible" content="ie=edge">
-     <link rel="stylesheet" href="main.css">
-     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
+     <link rel="stylesheet" href="main.css">
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+     
+     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+     
      <title>PwsReport</title>
 </head>
 <body>
      <div class="menu">
           <li> <a onclick="showWindows()">Windows</a> </li>
           <li> <a onclick="showProjects()">Projects</a> </li>
-          <!-- <li> <a onclick="showNotes()">Notes</a> </li> -->
-
+          <li> <a onclick="showNotes()">Notes&Tasks</a> </li>
 
      </div>
 
@@ -36,17 +39,29 @@
                <div id="ProjectStat" style="width: 50vw; height: 50vh;"></div>
           </div>
           
+          <div class="notes">
+               
+               <div class="editor_notes" >
 
-          <!--<div class="settings">
-               <p>Settings</p>
-               
-               <h2>Choice icons theme</h2>
-               <input type="input" placeholder="Theme floader">
-               
-               <h2>Add project</h2>
-               
+                    <h3>Notes</h3>
 
-          </div>-->
+                    <p>*For delete rigth click</p>
+                    <input type="input" class="note_input" placeholder="Input text note" onblur="AddNewNote(this)" >
+                    <i class="material-icons button_delete_task" style="position: absolute;margin-top: 1em;" onclick="DelAllNotes()">delete</i>
+
+                    <div class="list-notes" >
+                         
+                    </div>
+               </div>
+
+               <div class="tasks">
+                    <h3>Tasks</h3>
+                    <div class="button_new_task" onclick="AddNewTask()"> + </div>
+
+                    <div class="list-tasks"></div>
+               </div>
+
+          </div>
 
      </div>
 </body>
@@ -66,6 +81,13 @@
      var windows_elems = all_windows.getElementsByClassName("window");
      var projects_elems = all_projects.getElementsByClassName("project");
 
+     var notes_editor = document.getElementsByClassName("notes")[0].getElementsByClassName("editor_notes")[0];
+     
+     var list_notes = notes_editor.getElementsByClassName("list-notes")[0];
+     var list_tasks = document.getElementsByClassName("list-tasks")[0];
+     
+     var last_task_id = 0; 
+
      var hour = 0;
 
      function FindWindow( name )
@@ -79,6 +101,10 @@
 
           return -1;
      }
+
+     //
+     // Functions for convert time 
+     //
 
      function msToHoursMinAndSec(millisec) {
           
@@ -120,6 +146,10 @@
           }
           return "00:"+checkSec(seconds);
      }
+
+     // 
+     // Fuctions for add and remove windows
+     // 
 
      function AddNewWindow( name, pid, CPM, CPS, all_press_keys, all_time, img_path )
      {
@@ -195,7 +225,7 @@
      {
           var result = "";
 
-          for( var i = path.length-1;i != 0; i--)
+          for( var i = path.length-1;i != 0; i-- )
           {
                if( path[i] == '/')
                     break;
@@ -238,6 +268,200 @@
           all_projects.appendChild(new_w)
      }
 
+     //
+     // Load and write data to local storage 
+     //
+
+     function WriteUserDataToPage()
+     {
+
+          if( localStorage.user_data == undefined )
+               return;
+
+          var obj = JSON.parse( localStorage.user_data );
+
+          console.log( localStorage.user_data );
+
+          obj.notes.reverse();
+          for( var i = 0; i < obj.notes.length; i++ )
+          {
+               list_notes.innerHTML = '<div class="note" oncontextmenu="DelNote(this)" contenteditable="true">'+obj.notes[i]+'</div>'+ list_notes.innerHTML;
+          }
+
+          for( var i = 0; i < obj.tasks.length; i++ )
+          {
+               var html_task = `<div class="task" id="` +obj.tasks[i].id+ `">
+                    <input type="date" value="`+obj.tasks[i].date_deadline+`" onblur="SaveTaskValues()" >
+                    <i class="material-icons button_delete_task" onclick="DelTask(this)">delete</i>
+
+                    <center>
+                         <textarea name="" id="" cols="30" onblur="SaveTaskValues()" rows="5" placeholder="Input task info">`+obj.tasks[i].text+`</textarea>
+                    </center>
+
+                    <p>Task execution time:</p>
+
+                    <div class="stopwatch">
+                    
+                         <h2 onclick="StartTimerTask(this)">▶</h2>
+                         <li class="clock_face">` + msToHoursMinAndSec( obj.tasks[i].time ) +`</li>
+                         <time value="0">` + obj.tasks[i].time + `</time>
+                    </div>
+               </div>`;
+
+               list_tasks.innerHTML += html_task;
+
+               last_task_id = parseInt(obj.tasks[i].id);
+          }
+     }
+
+     function SaveNotesAndTasksToLocalStorage()
+     {
+          var notes_list_val = list_notes.getElementsByClassName("note");
+          var tasks_list_val = list_tasks.getElementsByClassName("task");
+
+          var obj = JSON.parse( '{ "notes": [], "tasks": [] }' );
+
+          for( var i =0; i < notes_list_val.length; i++ )
+          {
+               obj['notes'].push( notes_list_val[i].innerHTML );
+          }
+
+          for( var i =0; i < tasks_list_val.length; i++ )
+          {
+               var task = tasks_list_val[i]
+               obj['tasks'].push(
+               {
+                    id : task.id,
+                    
+                    text: task.getElementsByTagName("textarea")[0].value,
+                    date_deadline: task.getElementsByTagName("input")[0].value,
+
+                    time: task.getElementsByTagName("time")[0].innerHTML 
+               });
+          }
+
+          localStorage.user_data = JSON.stringify( obj );
+     }
+
+     // 
+     // Fuctions for add and remove notes 
+     // 
+
+     function AddNewNote( elem )
+     {
+          if( elem.value.length == 0 )
+               return;
+
+
+          list_notes.innerHTML = '<div class="note" oncontextmenu="DelNote(this)" contenteditable="true">'+elem.value+'</div>'+ list_notes.innerHTML;
+          
+          elem.value = ""
+     }
+
+     function DelNote( elem )
+     {
+          if( confirm("Delete choice note ? ") )
+          {
+               elem.outerHTML = ' '
+          }
+     }
+
+     function DelAllNotes()
+     {
+          if( confirm("DELETE ALL NOTES ?") )
+          {
+               list_notes.innerHTML = "";
+          }
+     }
+     // 
+     // Fuctions for add and remove tasks 
+     // 
+     function AddNewTask()
+     {
+          last_task_id += 1;
+
+          var html_task = `<div class="task" id="` +last_task_id+  `">
+                    <input type="date" value="" onblur="SaveTaskValues()" >
+                    <i class="material-icons button_delete_task" onclick="DelTask(this)">delete</i>
+
+                    <center>
+                         <textarea name="" id="" cols="30" onblur="SaveTaskValues()" rows="5" placeholder="Input task info"></textarea>
+                    </center>
+
+                    <p>Task execution time:</p>
+
+                    <div class="stopwatch">
+                    
+                         <h2 onclick="StartTimerTask(this)">▶</h2>
+                         <li class="clock_face">0:0:0</li>
+                         <time value="0">0</time>
+                    </div>
+               </div>
+          `;
+          
+          list_tasks.innerHTML += html_task;
+     }
+
+     function SaveTaskValues()
+     {
+          // For save input text to html
+          var all_task_values = document.getElementsByTagName("textarea");
+          var all_inputs_values = list_tasks.getElementsByTagName("input");
+
+          for( var i = 0; i <  all_task_values.length; i++ )
+          {
+               all_task_values[i].innerHTML = all_task_values[i].value;
+               all_inputs_values[i].innerHTML = all_inputs_values[i].value;
+          }
+     }
+
+     function DelTask( elem )
+     {
+          var choice = confirm("Delete choice task ? ")
+
+          if( choice )
+          {
+               elem.parentNode.outerHTML = ' '
+          }
+     }
+
+     //
+     // Function stopwatches 
+     //
+     
+     function StopTimerTask( elem )
+     {
+          elem.outerHTML  = '<h2 onclick="StartTimerTask(this)">▶</h2>';
+     }
+
+     function StartTimerTask( elem )
+     {
+
+          var task_id   = elem.parentNode.parentNode.id;
+          var prev_time = parseInt(elem.parentNode.getElementsByTagName("TIME")[0].innerHTML);
+
+          var timer_id = setTimeout( function tick( task_id, prev_time ) { 
+               
+               var timer_value = document.getElementById(task_id).getElementsByClassName("clock_face")[0].innerHTML; 
+
+               if( timer_value == null ||  
+                    document.getElementById(task_id).getElementsByTagName("H2")[0].innerHTML != "▐▐")
+                    return;
+
+               document.getElementById(task_id).getElementsByClassName("clock_face")[0].innerHTML = msToHoursMinAndSec(prev_time+1000);
+               document.getElementById(task_id).getElementsByTagName("TIME")[0].innerHTML = prev_time;
+               timer_id = setTimeout( tick, 1000, task_id, prev_time+1000);
+
+          }, 1000, task_id, prev_time);
+          
+
+          elem.outerHTML = '<h2 onclick="StopTimerTask(this)" style="font-size: 1em; margin-top: 2%;">▐▐</h2>';
+     }
+
+     // 
+     // Fuctions for make diagram most development projects  
+     // 
+
      function GetStatData( data )
      {
           for( var i =0; i < window.json_o.projects.length; i++ )
@@ -253,7 +477,6 @@
           }
           
           return data;
-
      }
 
      function BuildStats()
@@ -270,7 +493,6 @@
 
                var mod_data = GetStatData(data_user);
 
-               console.log()
                var options = {
                     title: '',
                     pieHole: 0.6,
@@ -293,6 +515,10 @@
                chart.draw(mod_data, options);          
           }
      }
+
+     // 
+     // Fuctions switch hours  
+     // 
 
      function LoadStatNextHour()
      {
@@ -318,6 +544,10 @@
 
           WriteToPage();
      }
+
+     // 
+     // Main function drawing datas 
+     // 
 
      function WriteToPage()
      {
@@ -346,7 +576,6 @@
                var current_num_press_keys  = json_o.windows[i].stat_per_hours[j].num_pressed_keys;
                var img_path = json_o.windows[i].path_icon;
 
-               console.log( img_path)
                AddNewWindow( wname, wpid, current_CMP, current_CMS, current_num_press_keys, wAll_used_time , img_path)
           }
 
@@ -365,11 +594,15 @@
           BuildStats();
      }
 
+
+
      function showProjects()
      {
           document.getElementsByClassName("projects")[0].style.display = "block";
+          document.getElementsByClassName("containerProjectStats")[0].style.display = "block";
+
           document.getElementsByClassName("windows")[0].style.display = "none";
-          document.getElementsByClassName("settings")[0].style.display = "none";
+          document.getElementsByClassName("notes")[0].style.display = "none";
 
      }
 
@@ -377,17 +610,18 @@
      {
           document.getElementsByClassName("windows")[0].style.display = "block";
           document.getElementsByClassName("projects")[0].style.display = "none";
-          document.getElementsByClassName("settings")[0].style.display = "none";
-
+          document.getElementsByClassName("notes")[0].style.display = "none";
+          document.getElementsByClassName("containerProjectStats")[0].style.display = "none";
      }
 
-     // function showNotes()
-     // {
-     //      document.getElementsByClassName("notes")[0].style.display = "block";
-     //      document.getElementsByClassName("projects")[0].style.display = "none";
-     //      document.getElementsByClassName("windows")[0].style.display = "none";
+     function showNotes()
+     {
+          document.getElementsByClassName("notes")[0].style.display = "block";
+          document.getElementsByClassName("projects")[0].style.display = "none";
+          document.getElementsByClassName("windows")[0].style.display = "none";
+          document.getElementsByClassName("containerProjectStats")[0].style.display = "none";
 
-     // }
+     }
 
      function GetDataFromClient()
      {
@@ -401,14 +635,25 @@
      }
 
 
-     let timer_id = setTimeout( function tick() { 
+     let main_timer_id = setTimeout( function tick() {
           
           GetDataFromClient();
-
-          timer_id = setTimeout( tick, 10000)
+          main_timer_id = setTimeout( tick, 10000)
      }, 10000);
 
 
-     GetDataFromClient()
+     // 
+     // Save to cookie all notes and tasks 
+     //
+
+     window.onbeforeunload = function () {
+          SaveNotesAndTasksToLocalStorage();
+     };
+
+     // window.location.reload(true);
+
+     GetDataFromClient();
+
+     WriteUserDataToPage();
 
 </script>

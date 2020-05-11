@@ -14,11 +14,7 @@ void RunServer()
 
 /* TODO
  * Make reopen config in real-time
- * Make configurate project from web page 
- * Notes and tasks 
- * Change design web page 
  * Logging errors
- * Grap pixmap form window X11
  */
 
 nlohmann::json ParseConfigFile( char *filename )
