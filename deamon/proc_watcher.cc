@@ -29,7 +29,6 @@ void ProcWatcher::GetFocusWindow()
 
      XGetInputFocus( this->display, &this->focus_window, &i );
 
-     getWindowParent( this->display, this->focus_window );
 
      if( this->focus_window == None )
      {
@@ -121,7 +120,7 @@ void ProcWatcher::GetWindowProp()
           status = XGetWindowProperty( this->display, this->focus_window, atom_pid, 
                0, 1024, False, XA_CARDINAL, &type, &format, 
                &nItems, &bytesAfter, &propPid );
-          
+
           if( propPid != NULL )
                break;
 
@@ -134,10 +133,14 @@ void ProcWatcher::GetWindowProp()
      }
 
      pid = *reinterpret_cast<pid_t*>(propPid);
+
      proc_name = this->GetProcName(pid);
      
      if( this->windows_info.find( proc_name ) == this->windows_info.end() )
      {
+          getWindowParent( this->display, this->focus_window );
+
+
           WindowProperty cwp;
           cwp.w = this->focus_window;
           cwp.name = proc_name;
@@ -247,6 +250,7 @@ void ProcWatcher::Start()
           }
 
           this->GetFocusWindow(); 
+          getWindowParent( this->display, this->focus_window );
 
 
           if( this->focus_window != last_window )
