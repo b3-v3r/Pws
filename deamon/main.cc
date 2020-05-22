@@ -4,13 +4,8 @@
 
 #include "core.hpp"
 #include "pws_reporter.hpp"
+#include "http_server.hpp"
 #include <sstream>
-
-void RunServer()
-{
-     system( ("go run ../client/main.go " + std::to_string(getpid()) + " &").c_str() );
-}
-
 
 /* TODO
  * Make reopen config in real-time
@@ -65,8 +60,9 @@ int main( int argc, char **argv )
 
      if( pid == 0 )
      {
-          signal( SIGINT, &PwsReporter::Report );
-          signal( SIGTERM, &PwsReporter::SaveAll );
+          signal( SIGTERM, &PwsReporter::SaveAllStats );
+          signal( SIGKILL, &PwsReporter::SaveAllStats );
+          signal( SIGHUP,  &PwsReporter::SaveAllStats );
 
           nlohmann::json j = ParseConfigFile( argv[1] );
           
@@ -74,7 +70,7 @@ int main( int argc, char **argv )
           for( auto path : j["projects"] )
                PwsCore::AddProject(path);
 
-          RunServer();
+          ServerHttp::RunServer();
 
           PwsCore::HandleProjects();  
           PwsCore::HandleProccess();   

@@ -39,10 +39,8 @@ nlohmann::json GetStatAsJson( std::vector< struct input_stat*> *stats,
 }
 
 
-void ReportToFile( std::string path )
-{
-     nlohmann::json report_j;
-
+void PwsReporter::ReadCurrentStats( nlohmann::json &report_j )
+{ 
      nlohmann::json projects_j;
      nlohmann::json windows_j = nlohmann::json::array();
 
@@ -95,21 +93,16 @@ void ReportToFile( std::string path )
 
      report_j["windows"] = windows_j;
      report_j["projects"] = projects_j;
+}
 
-     std::ofstream file_result( path );
+void PwsReporter::SaveAllStats( int num_signal )
+{
+     nlohmann::json report_j;
+     PwsReporter::ReadCurrentStats( report_j );
+
+     std::ofstream file_result( "../stats/history.json", std::ios::app );
      file_result << report_j;
-}
-
-void PwsReporter::Report( int num_signal )
-{
-     ReportToFile("../stats/current_stat.json");
-}
-
-void PwsReporter::SaveAll( int num_signal )
-{
-     PwsReporter::Report( 0 );
-     ReportToFile("../stats/" + 
-               std::to_string( PwsReporter::time_start_deamon ) + ".json");
+     file_result.close();
      exit(0);     
 }
 

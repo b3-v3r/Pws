@@ -12,10 +12,11 @@
 namespace PwsReporter{
      static std::time_t time_start_deamon;
 
-     void Report( int num_signal );
-     void SaveAll( int num_signal );
+     void ReadCurrentStats( nlohmann::json &report_j );
+
+     void SaveAllStats( int num_signal );
 
      void InitReporterParams();
-};
 
+};
 #endif
