@@ -10,9 +10,15 @@
 #include <httplib.h>
 
 
+struct AppInfo
+{
+     long all_press_keys;
+
+     int max_CPS;
+     int hours_using; 
+};
 
 class ServerHttp {
-
 private:
      static httplib::Server serv;
 

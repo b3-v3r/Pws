@@ -1,19 +1,16 @@
 body {
-     /*background-color: #10161d;*/
-    /* background: rgb(17,22,28);
-     background: linear-gradient(90deg, rgba(17,22,28,1) 0%, rgba(16,22,29,1) 69%);
-      */
-     background: -moz-linear-gradient(40deg, rgba(53,73,94,1) 0%, rgba(53,73,94,1) 39%, rgba(211,86,86,1) 103%); /* ff3.6+ */
-     background: -webkit-gradient(linear, left bottom, right top, color-stop(0%, rgba(53,73,94,1)), color-stop(39%, rgba(53,73,94,1)), color-stop(100%, rgba(211,86,86,1))); /* safari4+,chrome */
-     background: -webkit-linear-gradient(40deg, rgba(53,73,94,1) 0%, rgba(53,73,94,1) 39%, rgba(211,86,86,1) 103%); /* safari5.1+,chrome10+ */
-     background: -o-linear-gradient(40deg, rgba(53,73,94,1) 0%, rgba(53,73,94,1) 39%, rgba(211,86,86,1) 103%); /* opera 11.10+ */
-     background: -ms-linear-gradient(40deg, rgba(53,73,94,1) 0%, rgba(53,73,94,1) 39%, rgba(211,86,86,1) 103%); /* ie10+ */
-     background: linear-gradient(50deg, rgba(53,73,94,1) 0%, rgba(53,73,94,1) 39%, rgba(211,86,86,1) 103%); /* w3c */
-     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#35495e', endColorstr='#d35656',GradientType=1 ); /* ie6-9 */               
+     
+     background: #3a6186;
+     background: -webkit-linear-gradient(left, #3a6186, #89253e);
+     background: -o-linear-gradient(left, #3a6186, #89253e);
+     background: linear-gradient(to right, #3a6186, #89253e); 
+
      margin: 0;
      padding: 0;
      
      overflow: hidden;
+     overflow-x: hidden;
+     overflow-y: hidden;
 }
 
 .menu {
@@ -26,8 +23,7 @@ body {
      padding: 10px;
 
      border-radius: 0px 0px 10px 10px;
-     user-select: none;      
-
+     user-select: none;
 }
 
 .menu a {

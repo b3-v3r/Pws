@@ -101,7 +101,10 @@ void PwsReporter::SaveAllStats( int num_signal )
      PwsReporter::ReadCurrentStats( report_j );
 
      std::ofstream file_result( "../stats/history.json", std::ios::app );
+
      file_result << report_j;
+     file_result << ",";
+
      file_result.close();
      exit(0);     
 }

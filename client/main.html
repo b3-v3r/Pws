@@ -18,13 +18,14 @@
           <li> <a onclick="showWindows()">Windows</a> </li>
           <li> <a onclick="showProjects()">Projects</a> </li>
           <li> <a onclick="showNotes()">Notes&Tasks</a> </li>
+          <li> <a href="/stats">Stats</a> </li>
 
      </div>
 
      <div class="hour_holder">
-          <li onclick="LoadStatPrevHour()"> <  </li>
+          <li onclick="LoadStatPrevHour()"> < </li>
           <p>Current hour</p>
-          <li onclick="LoadStatNextHour()"> >  </li>
+          <li onclick="LoadStatNextHour()"> > </li>
 
      </div>
 
@@ -62,8 +63,6 @@
                </div>
 
           </div>
-
-     </div>
 </body>
 </html>
 
@@ -631,7 +630,6 @@
           
           window.json_text = xmlHttp.responseText;
           WriteToPage();
-
      }
 
 
@@ -643,14 +641,12 @@
 
 
      // 
-     // Save to cookie all notes and tasks 
+     // Save to localStorage all notes and tasks 
      //
 
      window.onbeforeunload = function () {
           SaveNotesAndTasksToLocalStorage();
      };
-
-     // window.location.reload(true);
 
      GetDataFromClient();
 

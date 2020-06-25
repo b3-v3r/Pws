@@ -1,0 +1,81 @@
+body, html {
+	height: 100%;
+}
+
+
+body {
+    background-size: 200%;
+    margin: 0;
+    padding: 0;
+		
+    background: #3a6186;
+    background: -webkit-linear-gradient(to right, #3a6186, #89253e); 
+    background: linear-gradient(to right, #3a6186, #89253e);      
+}
+
+h1 {
+     font-size:3em; 
+     font-weight: 300;
+     line-height:1em;
+     text-align: center;
+     color: #a8dadc;
+}
+
+img {
+     width: 7vh;
+     height: 7vh;
+	padding: 0;
+	margin: 0; 
+}
+
+.container {
+	margin-top: 5%;
+	text-align: left;
+	width: 80%;
+	height: 70%;
+	overflow: hidden;
+	margin: 5% auto 0 auto;
+  	display: table;
+  	padding: 0 0 8em 0;
+}
+
+tbody {
+	overflow-y: scroll;
+	height: 20%; 
+}
+
+.container th h1 {
+	font-weight: bold;
+	font-size: 1em;
+  	text-align: left;
+  	color: #aed9e0;
+}
+
+.container td {
+	font-weight: 600;
+	font-size: 1em;
+	color: #2ab7ca;
+}
+
+.container td, th {
+	padding-bottom: 2%;
+	padding-top: 2%;
+	padding-left:2%;  
+}
+
+.container tr:nth-child(odd) {
+     background-color: #323C50;
+}
+
+.container tr:nth-child(even) {
+     background-color: #2C3446;
+}
+
+.container th {
+     background-color: #1F2739;
+}
+
+.container td:nth-child(2) {
+	color: #FB667A;
+}
+
